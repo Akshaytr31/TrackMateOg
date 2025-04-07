@@ -1,7 +1,6 @@
 import React from 'react'
 import {
-    BarChart,
-    Bar,
+    Line,
     XAxis,
     YAxis,
     CartesianGrid,
@@ -9,6 +8,7 @@ import {
     Legend,
     ResponsiveContainer,
     Cell,
+    LineChart,
 } from "recharts"
 
 function CustomBarChart({ data }) {
@@ -47,30 +47,27 @@ function CustomBarChart({ data }) {
     return (
         <div className='bg-white mt-6'>
             <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={data}>
-                    <CartesianGrid stroke='none' />
+            <LineChart data={data}>
+                    <CartesianGrid stroke="none" />
                     <XAxis
                         dataKey="priority"
                         tick={{ fontSize: 12, fill: "#555" }}
-                        stroke='none'
+                        stroke="none"
                     />
-                    <YAxis tick={{ fontSize: 12, fill: "#555" }} stroke='none' />
-
-                    <Tooltip content={CustomTooltip} cusrsor={{ fill: "transparent" }} />
-
-                    <Bar
+                    <YAxis
+                        tick={{ fontSize: 12, fill: "#555" }}
+                        stroke="none"
+                    />
+                    <Tooltip content={<CustomTooltip />} />
+                    <Line
+                        type="monotone"
                         dataKey="count"
-                        nameKey="priority"
-                        fill="#FF8042"
-                        radius={[10, 10, 0, 0]}
-                        activeDot={{ r: 8, fill: "yellow" }}
-                        activeStyle={{ fill: "green" }}
-                    >
-                        {data.map((entry, index) => (
-                            <Cell key={index} fill={getBarcolor(entry)} />
-                        ))}
-                    </Bar>
-                </BarChart>
+                        stroke="#8884d8"
+                        strokeWidth={3}
+                        dot={{ r: 6 }}
+                        activeDot={{ r: 8 }}
+                    />
+                </LineChart>
             </ResponsiveContainer>
         </div>
     )
@@ -79,4 +76,4 @@ function CustomBarChart({ data }) {
 export default CustomBarChart
 
 
-/////]]]]]]]
+//]
