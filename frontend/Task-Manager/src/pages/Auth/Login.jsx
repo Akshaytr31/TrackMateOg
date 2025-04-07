@@ -32,22 +32,16 @@ function Login() {
       return;
     }
 
-    console.log('Logging in with:', email, password);
-
-    
     try {
       const response = await axiosInstance.post(API_PATHS.AUTH.LOGIN+`?email=${email}&password=${password}`);
-      const { token, role, user } = response.data;
-      console.log(token, role, user)
+      const { token, role } = response.data;
+      console.log(token, role, response.data)
       if (token) {
         localStorage.setItem("token", token);
-        // updateUser(user); // Store user in context
-        console.log('user set')
-        console.log(token)
+        updateUser(response.data);
         if (role === "admin") {
           navigate("/admin/dashboard");
         } else {
-          console.log('/user/dashboard');
           navigate("/user/dashboard");
         }
       } else {

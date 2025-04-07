@@ -13,10 +13,11 @@ import TaskListTable from '../../components/Tables/TaskListTable';
 import CustomPieChart from '../../components/Charts/CustomPieChart';
 import CustomBarChart from '../../components/Charts/CustomBarChart';
 // import TaskListTable from '../../components/Tables/TaskListTable';
+import ActiveUserList from '../../components/ActiveUserList/ActiveUserList';
 const COLORS=["#8D51FF","#00BBDB","#7BCE00"]
 
 
-function UserDashboard() {
+function Dashboard() {
     useUserAuth(); 
 
     const { user } = useContext(UserContext); 
@@ -111,7 +112,7 @@ function UserDashboard() {
                         </p>
                     </div>
                 </div>
-                <div className='grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 md:gap-6 mt-5'>
+                {/* <div className='grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 md:gap-6 mt-5'>
                     <InfoCard
                         label="Total Task"
                         value={addTousandsSeparator(
@@ -140,10 +141,10 @@ function UserDashboard() {
                         )}
                         color="bg-lime-500"
                     />
-                </div>
+                </div> */}
             </div>
             <div className='grid grid-cols-1 md:grid-cols-2 gap-6 my-4 md:my-6'>
-
+{/* 
                 <div>
                     <div className='card'>
                         <div className='flex items-center justify-between'>
@@ -154,12 +155,20 @@ function UserDashboard() {
                             colors={COLORS}
                         />
                     </div>
+                </div> */}
+
+                <div className='card'>
+                    {/* <ActiveUserList>
+
+
+                     </ActiveUserList> */}
+                    All Members
                 </div>
 
                 <div>
                     <div className='card'>
                         <div className='flex items-center justify-between'>
-                            <h5 className='font-medium'>Task Priority Level</h5>
+                            <h5 className='font-medium'>Work Flow Level</h5>
                         </div>
                         <CustomBarChart
                             data={barChartData}
@@ -183,9 +192,11 @@ function UserDashboard() {
     );
 }
 
-export default UserDashboard;
+export default Dashboard;
 
 
 
 
-/////]]]]]]
+
+
+//]]]]]]

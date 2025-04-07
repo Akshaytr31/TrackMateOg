@@ -23,21 +23,22 @@ const UserProvider = ({ children }) => {
     
             try {
                 const response = await axiosInstance.get(API_PATHS.AUTH.GET_PROFILE);
-                setUser(response.data);
+                setUser(response.data.user);
             } catch (error) {
                 console.error("User not authenticated", error);
                 clearUser();
+                window.location.href = "/login";
             } finally {
                 setLoading(false);
             }
         };
     
         fetchUser();
-    }, []); // ✅ Run only once on mount
+    }, []); 
 
     const updateUser = (userData) => {
         setUser(userData);
-        localStorage.setItem("token", userData.token);
+        localStorage.setItem("token",userData.token);
         setLoading(false);
     };
 

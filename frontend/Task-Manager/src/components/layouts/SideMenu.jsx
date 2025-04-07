@@ -11,7 +11,7 @@ const SideMenu = ({ activeMenu }) => {
     const isAdmin = user?.role === "admin";
 
     const handleClick = (route) => {
-        if (route === "logout") {
+        if (route === "/logout") {
             handleLogout();
             return;
         }
@@ -25,7 +25,6 @@ const SideMenu = ({ activeMenu }) => {
     };
 
     useEffect(() => {
-        console.log("User data:", user); 
         if (user) {
             setSideMenuData(isAdmin ? SIDE_MENU_DATA : SIDE_MENU_USER_DATA);
         }
@@ -76,5 +75,8 @@ export default SideMenu;
 
 
 
+/////]
 
-//]]
+
+
+

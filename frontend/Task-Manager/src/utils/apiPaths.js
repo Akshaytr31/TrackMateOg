@@ -31,10 +31,15 @@ export const API_PATHS = {
   IMAGE: {
     UPLOAD_IMAGE: "/api/auth/upload-image",
   },
+  TIMELOG: {
+    START: "/api/timelog/start",   // ⏳ Check-in (Start)
+    STOP: "/api/timelog/stop",     // 🛑 Check-out (Stop)
+    GET_SUMMARY: "/api/timelog/summary",  // 📊 Fetch Daily Hours for Graph
+  }
 };
 
 
 
 
 
-////
+/////]]

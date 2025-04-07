@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
-import { HiOutlineX, HiOutlineMenu } from 'react-icons/hi'; // Import icons
+import { HiOutlineX, HiOutlineMenu } from 'react-icons/hi';
 import SideMenu from './SideMenu';
+import '../styles/Sidebar.css'; 
 
 function Navbar({ activeMenu }) {
-  const [OpenSideMenu, setOpenSideMenu] = useState(false); // Initialize state
+  const [OpenSideMenu, setOpenSideMenu] = useState(false);
 
   return (
-    <div className='flex gap-5 border border-b border-blur-[2px] py-4 px-7 sticky top-0 z-30 '>
+    <div className='navbar flex gap-5 border-b border-b-blue-200 py-4 px-7 sticky top-0 z-1001 bg-white'>
       <button
         className='block lg:hidden text-black'
         onClick={() => {
@@ -19,15 +20,24 @@ function Navbar({ activeMenu }) {
           <HiOutlineMenu className="text-2xl"/> 
         )}
       </button>
-      <h2 className='text-lg font-medium text-black'>Expense Tracker</h2>
+      <h2 className='text-lg font-medium text-black'>Time Tracker</h2>
 
+      {/* Sidebar */}
+      <div className={`sidebar ${OpenSideMenu ? 'open' : ''}`}>
+        <SideMenu activeMenu={activeMenu} />
+      </div>
+
+      {/* Overlay */}
       {OpenSideMenu && (
-        <div className='fixed top-[61px] -ml-4 bg-white'>
-          <SideMenu activeMenu={activeMenu} /> 
-        </div>
+        <div
+          className="fixed "
+          onClick={() => setOpenSideMenu(false)}
+        ></div>
       )}
     </div>
   );
 }
 
 export default Navbar;
+
+////////
