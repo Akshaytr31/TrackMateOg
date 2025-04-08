@@ -24,8 +24,24 @@ function Dashboard() {
     const navigate = useNavigate();
 
     const [dashboardData, setDashboardData] = useState(null);
-    const [pieChartData, setPieChartData] = useState([]);  // ✅ Fixed typo
-    const [barChartData, setBarChartData] = useState([]);  // ✅ Fixed typo
+    const [pieChartData, setPieChartData] = useState([]);  
+    const [barChartData, setBarChartData] = useState([]); 
+    
+    const [users, setUser] = useState([]);
+    const [searchQuery,setSearchQuery]=useState("")
+
+    const getAllUser=async ()=>{
+        try{
+            const res=await axiosInstance.get("/api/users")
+            setUser(res.data)
+        }catch (error){
+            console.error('Failed to fetch users:',error)
+        }
+    }
+
+    const filteredUsers=users.filter((u)=>
+        u.name.toLowerCase().includes(searchQuery.toLowerCase())
+    )
 
     // const taskDistributionData = () => {
     //     const taskDistribution = data?.taskDistribution || null;
@@ -97,6 +113,7 @@ function Dashboard() {
     
     useEffect(() => {
         getDashboardData();
+        getAllUser()
     }, []);
 
     return (
@@ -112,58 +129,8 @@ function Dashboard() {
                         </p>
                     </div>
                 </div>
-                {/* <div className='grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 md:gap-6 mt-5'>
-                    <InfoCard
-                        label="Total Task"
-                        value={addTousandsSeparator(
-                            dashboardData?.charts?.taskDistribution?.All || 0
-                        )}
-                        color="bg-blue-500"
-                    />
-                    <InfoCard
-                        label="pendeing Task"
-                        value={addTousandsSeparator(
-                            dashboardData?.charts?.taskDistribution?.Pending || 0
-                        )}
-                        color="bg-violet-500"
-                    />
-                    <InfoCard
-                        label="In Progress Task"
-                        value={addTousandsSeparator(
-                            dashboardData?.charts?.taskDistribution?.InProgress || 0
-                        )}
-                        color="bg-cyan-500"
-                    />
-                    <InfoCard
-                        label="Completed Task"
-                        value={addTousandsSeparator(
-                            dashboardData?.charts?.taskDistribution?.Completed || 0
-                        )}
-                        color="bg-lime-500"
-                    />
-                </div> */}
             </div>
-            <div className='grid grid-cols-1 md:grid-cols-2 gap-6 my-4 md:my-6'>
-{/* 
-                <div>
-                    <div className='card'>
-                        <div className='flex items-center justify-between'>
-                            <h5 className='font-medium'>Task Distribution</h5>
-                        </div>
-                        <CustomPieChart
-                            data={pieChartData}
-                            colors={COLORS}
-                        />
-                    </div>
-                </div> */}
-
-                <div className='card'>
-                    {/* <ActiveUserList>
-
-
-                     </ActiveUserList> */}
-                    All Members
-                </div>
+            <div className='grid grid-cols-1 md:grid-cols-1 gap-y-6 my-4 md:my-6'>
 
                 <div>
                     <div className='card'>
@@ -177,26 +144,63 @@ function Dashboard() {
                 </div>
 
                 <div className='md:col-span-2'>
-                    <div className='card'>
+                    <div className='card pr-0'>
                         <div className='flex items justify-between'>
-                            <h5 className='card-btn'>Recent Tasks</h5>
-                            <button className='card-btn' onClick={onSeeMore}>
-                                See All <LuArrowDown className='text-base'/> 
-                            </button>
+                        <input
+                            type="text"
+                            placeholder='🔍 Search users by name...'
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="p-2 pl-4 border border-blue-100 rounded-3xl w-full max-w-xs focus:outline-none text-sm h-[40px]"
+                        />
                         </div>
-                        <TaskListTable tableData={dashboardData?.recentTasks || []}/>
+
+                        <div className='overflow-auto position:relative'>
+                        <table className="w-full mt-4 text-sm text-left ">
+                            <thead className="form-card bg-gray-100 text-sm font-semibold text-gray-700 w-full h-[40px]">
+                            <tr className=''>
+                                <th className="p-3">Name</th>
+                                <th className="p-3">Email</th>
+                                <th className="p-3">Role</th>
+                            </tr>
+                            </thead>
+                            {/* <div className='h-[100px]'> */}
+
+                            <tbody className=''>
+                            {filteredUsers.length > 0 ? (
+                                filteredUsers.map((u, index) => {
+                                const COLORS = ['#FF6B6B', '#6BCB77', '#4D96FF', '#FFD93D', '#A66DD4'];
+                                const color = COLORS[index % COLORS.length];
+
+                                return (
+                                    <tr key={u._id} className="form-card hover:scale-101 w-[100%] hover:text-sky-400">
+                                    <td className="p-3 flex items-center">
+                                        <div className="round" style={{ backgroundColor: color }}></div>
+                                        <span className="ml-2">{u.name}</span>
+                                    </td>
+                                    <td className="p-3 ">{u.email}</td>
+                                    <td className="p-3 capitalize">{u.role || "User"}</td>
+                                    </tr>
+                                );
+                                })
+                            ) : (
+                                <tr>
+                                <td colSpan="3" className="p-4 text-center text-gray-500">
+                                    No users found.
+                                </td>
+                                </tr>
+                            )}
+                            </tbody>
+                            {/* </div> */}
+                        </table>
+                        </div>
                     </div>
                 </div>
-            </div>
+
+                </div>
         </DashboardLayout>
     );
 }
 
 export default Dashboard;
 
-
-
-
-
-
-//]]]]]]

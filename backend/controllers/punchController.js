@@ -2,56 +2,67 @@ const Punch = require("../models/TimeLog");
 
 const recordPunch = async (req, res) => {
     try {
-        // const currentTime = Date.now();
-        const currentTime = new Date('2025-04-04 19:30:15').getTime();
+        const currentTime = Date.now();
+        let punch;
+        const lastPunch = await Punch.findOne({ userId: req.user.id }).sort({inTime: -1});
+          
+        
+        if (lastPunch && lastPunch.outTime === null) {
+            await Punch.updateOne(
+              { _id: lastPunch._id },
+              { $set: { outTime: currentTime } }
+            );
+            punch = { ...lastPunch._doc, outTime: JSON.stringify(currentTime)};
+        }else{
+            punch = await Punch.create({
+                userId: req.user.id,
+                inTime: currentTime,
+                outTime: null
+            })
+        }
 
-        const punch = await Punch.create({
-            userId: req.user.id,
-            dateTime: currentTime
-        })
-
-        res.status(201).json({ message: "Punch Recorded successfully.", punch });
+        res.status(201).json({ message: "Punch Recorded successfully.", punch});
     } catch (error) {
         res.status(500).json({ message: "Server error", error: error.message });
     }
 };
 
-const getPunchSummery = async (req, res) => {
+const getPunchSummary = async (req, res) => {
     try {
-        const punches = await Punch.find({ userId: req.user.id }).sort({ dateTime: 1 });
-
+        const punches = await Punch.find({ userId: req.user.id }).sort({ inTime: 1 });
+        const lastPunch = punches[punches.length - 1];
+        const isPunchedOut = lastPunch?.outTime !== null;
         const grouped = {};
 
         punches.forEach(punch => {
-            const date = new Date(parseInt(punch.dateTime)).toISOString().split('T')[0];
+            const date = new Date(parseInt(punch.inTime)).toISOString().split('T')[0];
             if (!grouped[date]) grouped[date] = [];
-            grouped[date].push(punch.dateTime);
-        });
 
-        console.log('grouped', grouped);
+            grouped[date].push(punch);
+        });
 
         const workedHoursPerDay = [];
 
-        for (const [date, timestamps] of Object.entries(grouped)) {
+        for (const [date, punchList] of Object.entries(grouped)) {
             let totalMs = 0;
-            for (let i = 0; i < timestamps.length; i += 2) {
-                const inTime = new Date(parseInt(timestamps[i]));
-                const outTime = timestamps[i + 1] ? new Date(parseInt(timestamps[i + 1])) : null;
-                if (outTime) {
+
+            punchList.forEach(punch => {
+                if (punch.outTime) {
+                    const inTime = new Date(parseInt(punch.inTime));
+                    const outTime = new Date(parseInt(punch.outTime? punch.outTime : Date.now()));
                     totalMs += outTime - inTime;
                 }
-                console.log('inTime, outTime, totalMs', inTime, outTime, totalMs)
-            }
-            // const hours = Math.round(totalMs / 1000 / 60 / 60); // convert ms to hours
+            });
+
             const hours = totalMs / 1000 / 60 / 60; // convert ms to hours
-            console.log('hours', hours);
-            workedHoursPerDay.push({date: date, hours: hours});
+            workedHoursPerDay.push({ date, hours});
         }
 
-        res.status(200).json(workedHoursPerDay);
+        res.status(200).json({workedHoursPerDay, isPunchedOut});
+
     } catch (error) {
         res.status(500).json({ message: "Server error", error: error.message})
     }
 }
 
-module.exports = { recordPunch, getPunchSummery };
+module.exports = { recordPunch, getPunchSummary };

@@ -2,11 +2,11 @@ const express = require('express');
 const router = express.Router();
 const TimeLog = require('../models/TimeLog');
 const { protect } = require("../middlewares/authMiddleware");
-const { recordPunch, getPunchSummery } = require('../controllers/punchController');
+const { recordPunch, getPunchSummary } = require('../controllers/punchController');
 
 router.get("/punch", protect, recordPunch);
 
-router.get("/summary", protect, getPunchSummery);
+router.get("/summary", protect, getPunchSummary);
 
 router.post('/start', async (req, res) => {
     const { userId } = req.body;

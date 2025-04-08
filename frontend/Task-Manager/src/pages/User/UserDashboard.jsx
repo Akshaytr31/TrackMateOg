@@ -60,25 +60,13 @@ function UserDashboard() {
             console.log("Fetching dashboard data...");
             const response = await axiosInstance.get(API_PATHS.TIMELOG.GET_SUMMARY);
             if (response.data) {
-                console.log("Dashboard Data:", response.data);
-                setDashboardData(response.data);
-                prepareChartData(response.data);
+                console.log('response.data.isPunchedOut', response.data.isPunchedOut)
+                if (response.data?.isPunchedOut===false){
+                    setIsStarted(true);
+                }
+                setDashboardData(response.data.workedHoursPerDay);
+                prepareChartData(response.data.workedHoursPerDay);
             }
-            // const sampleData = {
-            //     taskDistribution: {
-            //         Pending: 5,
-            //         InProgress: 8,
-            //         Completed: 12
-            //     },
-            //     taskPriorityLevels: {
-            //         Low: 7,
-            //         Medium: 10,
-            //         High: 3
-            //     }
-            // };
-            
-            // Call the function with the sample data
-            // prepareChartData(sampleData);
             
         } catch (error) {
             console.error("Error fetching dashboard data:", error);
@@ -102,11 +90,13 @@ function UserDashboard() {
       }
     
       try {
-        console.log("User:", user);
         const response = await axiosInstance.get("/api/timelog/punch");
-        console.log('response: ', response);
-        alert("Check-in recorded.");
-        setIsStarted(true)
+
+        if(response.data?.punch.outTime===null){
+            setIsStarted(true);
+        }else{
+            setIsStarted(false);
+        }
       } catch (err) {
         console.log("Check-in failed", err);
       }
@@ -144,9 +134,9 @@ function UserDashboard() {
                   <button 
                     className={`btn ${isStarted ? 'bg-green-600':'bg-blue-500 hover:bg-blue-600'}`} 
                     onClick={handleStart}
-                    > {isStarted ? "Started" : "Start"}
+                    > {isStarted ? "Punch Out" : "Punch In"}
                   </button>
-                  <button className='btn c' onClick={handleStop}>Stop</button>
+                  {/* <button className='btn c' onClick={handleStop}>Stop</button> */}
                 </div>
             </div>
             <div className='grid grid-cols-1 md:grid-cols-1 gap-6 my-4 md:my-6'>
@@ -181,4 +171,4 @@ function UserDashboard() {
 export default UserDashboard;
 
 
-/////
+////

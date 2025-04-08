@@ -13,7 +13,8 @@ const timeLogSchema = new mongoose.Schema({
 
 const punchLogSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-  dateTime: String,
+  inTime: { type: String},
+  outTime: { type: String}
 });
 
 module.exports = mongoose.model('TimeLog', timeLogSchema);

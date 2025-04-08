@@ -54,3 +54,6 @@
 .c{
   @apply hover:bg-blue-100 hover:text-red-700 
 }
+.round {
+  @apply w-[10px] h-[10px] rounded-full mr-[8px];
+}
