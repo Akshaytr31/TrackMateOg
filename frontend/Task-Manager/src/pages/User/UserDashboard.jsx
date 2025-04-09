@@ -21,50 +21,21 @@ function UserDashboard() {
 
     const { user } = useContext(UserContext); 
     const navigate = useNavigate();
-
-    const [dashboardData, setDashboardData] = useState(null);
-    const [pieChartData, setPieChartData] = useState([]);  
     const [barChartData, setBarChartData] = useState([]);  
-
-    const [isStarted,setIsStarted]=useState(false)
-
+    const [isStarted, setIsStarted] = useState(false);
 
 
-    //prepare Chart data
     const prepareChartData = (data) => {
-        const taskDistribution = data?.taskDistribution || null
-        const taskPriorityLevels = data?.taskPriorityLevels || null
-
-        const taskDistributionData = [
-            { status: "Pending", count: taskDistribution?.Pending || 0 },
-            { status: "In Progress", count: taskDistribution?.InProgress || 0 },
-            { status: "Completed", count: taskDistribution?.Completed || 0 }
-        ]
-
-        setPieChartData(taskDistributionData);
-
-        const PriorityLevelData = [
-            { priority: "Low", count: taskPriorityLevels?.Low || 1 },
-            { priority: "Medium", count: taskPriorityLevels?.Medium || 2 },
-            { priority: "High", count: taskPriorityLevels?.High || 3 }
-        ]
-
-        // console.log(taskDistributionData, PriorityLevelData);
-
-        // setBarChartData(taskDistributionData);
         setBarChartData(data);
     }
 
     const getDashboardData = async () => {
         try {
-            console.log("Fetching dashboard data...");
-            const response = await axiosInstance.get(API_PATHS.TIMELOG.GET_SUMMARY);
+            const response = await axiosInstance.post(API_PATHS.TIMELOG.GET_SUMMARY);
             if (response.data) {
-                console.log('response.data.isPunchedOut', response.data.isPunchedOut)
                 if (response.data?.isPunchedOut===false){
                     setIsStarted(true);
                 }
-                setDashboardData(response.data.workedHoursPerDay);
                 prepareChartData(response.data.workedHoursPerDay);
             }
             
@@ -72,13 +43,8 @@ function UserDashboard() {
             console.error("Error fetching dashboard data:", error);
         }
     };
-
-    const onSeeMore=()=>{
-        navigate('/admin/tasks')
-    }
     
     useEffect(() => {
-      console.log("User from context",user)
         getDashboardData();
     }, [user]);
 
@@ -101,21 +67,6 @@ function UserDashboard() {
         console.log("Check-in failed", err);
       }
     };
-    
-    const handleStop = async () => {
-      if (!user) {
-        console.warn("User not loaded yet");
-        return;
-      }
-    
-      try {
-        await axiosInstance.post("/api/TimeLog/stop", { userId: user._id });
-        alert("Check-out recorded.");
-      } catch (err) {
-        console.log("Check-out failed", err);
-      }
-    };
-    
 
     return (
         <DashboardLayout activeMenu="Dashboard">
@@ -152,7 +103,7 @@ function UserDashboard() {
                     </div>
                 </div>
 
-                <div className='md:col-span-2'>
+                {/* <div className='md:col-span-2'>
                     <div className='card'>
                         <div className='flex items justify-between'>
                             <h5 className='card-btn'>Recent Tasks</h5>
@@ -162,7 +113,7 @@ function UserDashboard() {
                         </div>
                         <TaskListTable tableData={dashboardData?.recentTasks || []}/>
                     </div>
-                </div>
+                </div> */}
             </div>
         </DashboardLayout>
     );
@@ -171,4 +122,4 @@ function UserDashboard() {
 export default UserDashboard;
 
 
-////
+////////

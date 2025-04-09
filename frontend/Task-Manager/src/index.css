@@ -57,3 +57,6 @@
 .round {
   @apply w-[10px] h-[10px] rounded-full mr-[8px];
 }
+.userList{
+  @apply bg-gray-100 p-6 rounded-2xl shadow-md shadow-gray-200 border border-gray-200/50
+}

@@ -35,7 +35,6 @@ function Login() {
     try {
       const response = await axiosInstance.post(API_PATHS.AUTH.LOGIN+`?email=${email}&password=${password}`);
       const { token, role } = response.data;
-      console.log(token, role, response.data)
       if (token) {
         localStorage.setItem("token", token);
         updateUser(response.data);

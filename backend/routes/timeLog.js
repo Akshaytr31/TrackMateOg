@@ -6,7 +6,7 @@ const { recordPunch, getPunchSummary } = require('../controllers/punchController
 
 router.get("/punch", protect, recordPunch);
 
-router.get("/summary", protect, getPunchSummary);
+router.post("/summary", protect, getPunchSummary);
 
 router.post('/start', async (req, res) => {
     const { userId } = req.body;

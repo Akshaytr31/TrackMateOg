@@ -32,12 +32,11 @@ function useUserAuth() {
 
     useEffect(() => {
         if (loading) return;
-
         // Allow users to access the dashboard even if they are not logged in
         // Remove this check if you want users to access the dashboard without login
         if (!user) {
             // Optionally, you can redirect unauthenticated users to a different page, or leave it empty
-            // navigate("/login");
+            navigate("/login");
         }
     }, [user, loading, navigate]);
 }
