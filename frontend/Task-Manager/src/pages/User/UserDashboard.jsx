@@ -1,3 +1,11 @@
+// import { addTousandsSeparator } from '../../utils/helper';
+// import InfoCard from '../../components/Cards/InfoCard';
+// import { LuArrowDown } from 'react-icons/lu';
+// import TaskListTable from '../../components/Tables/TaskListTable';
+// import CustomPieChart from '../../components/Charts/CustomPieChart';
+// import TaskListTable from '../../components/Tables/TaskListTable';
+
+
 import { UserContext } from '../../context/userContext';
 import React, { useContext, useEffect, useState } from 'react';
 import useUserAuth from '../../hooks/useUserAuth';
@@ -5,14 +13,8 @@ import DashboardLayout from '../../components/layouts/DashboardLayout';
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../../utils/axiosInstance';
 import { API_PATHS } from '../../utils/apiPaths';
-import moment from 'moment';
-import { addTousandsSeparator } from '../../utils/helper';
-import InfoCard from '../../components/Cards/InfoCard';
-import { LuArrowDown } from 'react-icons/lu';
-import TaskListTable from '../../components/Tables/TaskListTable';
-import CustomPieChart from '../../components/Charts/CustomPieChart';
 import CustomBarChart from '../../components/Charts/CustomBarChart';
-// import TaskListTable from '../../components/Tables/TaskListTable';
+import moment from 'moment';
 const COLORS=["#8D51FF","#00BBDB","#7BCE00"]
 
 
@@ -122,4 +124,4 @@ function UserDashboard() {
 export default UserDashboard;
 
 
-////////
+////]

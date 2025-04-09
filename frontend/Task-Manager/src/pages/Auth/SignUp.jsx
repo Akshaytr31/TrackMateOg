@@ -26,7 +26,7 @@ function SignUp() {
   const handleSignUp = async (e) => {
     e.preventDefault();
 
-    let ProfileImageUrl=""
+    let profileImageUrl=""
 
     if (!fullName) {
       setError("Please enter full name.");
@@ -53,13 +53,14 @@ function SignUp() {
       //Upload image if present
       if(profilePic){
         const imgUploadRes=await uploadImage(profilePic)
-        ProfileImageUrl=imgUploadRes.imageUrl||""
+        profileImageUrl = imgUploadRes.imageUrl || "";
+
       }
       const response=await axiosInstance.post(API_PATHS.AUTH.REGISTER,{
         name:fullName,
         email,
         password,
-        ProfileImageUrl,
+        profileImageUrl,
         adminInviteToken
       })
 
@@ -148,4 +149,4 @@ export default SignUp;
 
 
 
-/////]
+

@@ -45,6 +45,30 @@ const getUserById = async (req, res) => {
     }
 };
 
+const updateProfile = async (req, res) => {
+    try {
+      const userId = req.user.id;
+      const { profileImageUrl } = req.body;
+  
+      const updatedUser = await User.findByIdAndUpdate(
+        userId,
+        { profileImageUrl },
+        { new: true }
+      );
+  
+      res.json({
+        _id: updatedUser._id,
+        name: updatedUser.name,
+        email: updatedUser.email,
+        role: updatedUser.role,
+        profileImageUrl: updatedUser.profileImageUrl,
+      });
+    } catch (err) {
+      res.status(500).json({ message: "Failed to update profile." });
+    }
+  };
+  
+
 
 module.exports = { getUsers, getUserById };
 

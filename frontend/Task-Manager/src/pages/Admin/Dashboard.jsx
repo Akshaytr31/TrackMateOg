@@ -160,6 +160,9 @@ function Dashboard() {
                                 onChange={(e) => setSearchQuery(e.target.value)}
                                 className="p-2 pl-4 border border-blue-100 rounded-3xl w-full max-w-xs focus:outline-none text-sm h-[40px]"
                             />
+                            <div className='card-btn' onClick={()=>setShowUserList(false)}>
+                                close
+                            </div>
                             </div>
 
                             <div className='overflow-auto position:relative'>
@@ -222,3 +225,5 @@ function Dashboard() {
 
 export default Dashboard;
 
+
+///]]]]

@@ -32,14 +32,13 @@ export const API_PATHS = {
     UPLOAD_IMAGE: "/api/auth/upload-image",
   },
   TIMELOG: {
-    START: "/api/timelog/start",   // ⏳ Check-in (Start)
-    STOP: "/api/timelog/stop",     // 🛑 Check-out (Stop)
-    GET_SUMMARY: "/api/timelog/summary",  // 📊 Fetch Daily Hours for Graph
+    START: "/api/timelog/start",  
+    STOP: "/api/timelog/stop",    
+    GET_SUMMARY: "/api/timelog/summary",  
   }
 };
 
 
 
 
-
-/////]]
+///''''////]
