@@ -3,8 +3,23 @@ import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend
 } from 'recharts';
 
+function getRandomDarkColor() {
+  let color = '#';
+  for (let i = 0; i < 3; i++) {
+    // Generate darker color channels (0-150 instead of 0-255)
+    const value = Math.floor(Math.random() * 150); 
+    color += value.toString(16).padStart(2, '0');
+  }
+  return color;
+}
+
+
+function generateUserColors(userCount) {
+  return Array.from({ length: userCount }, getRandomDarkColor);
+}
+
 function TimeSummaryChart({ data, users }) {
-  const COLORS = ['#00BBDB', '#FF6B6B', '#6BCB77', '#4D96FF', '#FFD93D', '#A66DD4'];
+  const COLORS = generateUserColors(users.length);
 
   return (
     <div className='bg-white mt-6 rounded-lg p-4 shadow-sm'>
@@ -23,8 +38,8 @@ function TimeSummaryChart({ data, users }) {
             <Line
               key={user._id}
               type="monotone"
-              dataKey={user.name} // each user's data should be keyed by their name
-              stroke={COLORS[index % COLORS.length]}
+              dataKey={user.name}
+              stroke={COLORS[index]}
               strokeWidth={2}
               dot={{ r: 4 }}
               activeDot={{ r: 6 }}
