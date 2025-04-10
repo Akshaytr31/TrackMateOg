@@ -1,5 +1,5 @@
 import React from 'react'
-import UI_IMG from "/home/mics/Desktop/Task Manager/frontend/Task-Manager/src/assets/images/ChatGPT Image Apr 8, 2025, 03_16_27 PM.png"
+import UI_IMG from "/src/assets/images/ChatGPT Image Apr 8, 2025, 03_16_27 PM.png"
 
 function AuthLayout({children}) {
     return (
