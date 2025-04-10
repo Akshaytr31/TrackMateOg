@@ -14,12 +14,31 @@ const timeLogRoutes = require('./routes/timeLog'); // use exact lowercase match
 const app = express(); // Initialize express
 
 // Middleware to handle CORS
-app.use(cors({
-    origin: process.env.CLIENT_URL || "http://localhost:5173",
+// app.use(cors({
+//     origin: process.env.CLIENT_URL || "http://localhost:5173",
+//     credentials: true,
+//     methods: ["GET", "POST", "PUT", "DELETE"],
+//     allowedHeaders: ["Content-Type", "Authorization"],
+// }));
+
+const allowedOrigins = [
+    'http://localhost:5173',
+    process.env.CLIENT_URL
+  ];
+  
+  app.use(cors({
+    origin: function (origin, callback) {
+        console.log("Request Origin:", origin);
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
-}));
+  }));
 
 
 // Connect Database
