@@ -7,7 +7,7 @@ function getRandomDarkColor() {
   let color = '#';
   for (let i = 0; i < 3; i++) {
     // Generate darker color channels (0-150 instead of 0-255)
-    const value = Math.floor(Math.random() * 150); 
+    const value = Math.floor(Math.random() * 200); 
     color += value.toString(16).padStart(2, '0');
   }
   return color;
