@@ -1,3 +1,11 @@
+// import { addTousandsSeparator } from '../../utils/helper';
+// import InfoCard from '../../components/Cards/InfoCard';
+// import { LuArrowDown } from 'react-icons/lu';
+// import TaskListTable from '../../components/Tables/TaskListTable';
+// import CustomPieChart from '../../components/Charts/CustomPieChart';
+// import TaskListTable from '../../components/Tables/TaskListTable';
+// import ActiveUserList from '../../components/ActiveUserList/ActiveUserList';
+
 import { UserContext } from '../../context/userContext';
 import React, { useContext, useEffect, useState } from 'react';
 import useUserAuth from '../../hooks/useUserAuth';
@@ -6,14 +14,7 @@ import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../../utils/axiosInstance';
 import { API_PATHS } from '../../utils/apiPaths';
 import moment from 'moment';
-// import { addTousandsSeparator } from '../../utils/helper';
-// import InfoCard from '../../components/Cards/InfoCard';
-// import { LuArrowDown } from 'react-icons/lu';
-// import TaskListTable from '../../components/Tables/TaskListTable';
-// import CustomPieChart from '../../components/Charts/CustomPieChart';
 import CustomBarChart from '../../components/Charts/CustomBarChartAdmin';
-// import TaskListTable from '../../components/Tables/TaskListTable';
-// import ActiveUserList from '../../components/ActiveUserList/ActiveUserList';
 const COLORS=["#8D51FF","#00BBDB","#7BCE00"]
 import { Trash2 } from 'lucide-react';
 
@@ -101,7 +102,7 @@ function Dashboard() {
                 <div>
                     <div className="col-span-3">
                         <h2 className="text-xl md:text-2xl">
-                            Good Morning! {user?.name || "Guest"}
+                            Welcome {user?.name || "Guest"}
                         </h2>
                         <p className="text-xs md:text-[13px] text-gray-400 mt-1.5">
                             {moment().format("dddd Do MMMM YYYY")}
@@ -226,4 +227,4 @@ function Dashboard() {
 export default Dashboard;
 
 
-///]]]]
+////

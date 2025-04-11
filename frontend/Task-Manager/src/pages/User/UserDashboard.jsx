@@ -52,7 +52,6 @@ function UserDashboard() {
 
     const handleStart = async () => {
       if (!user) {
-        console.warn("User not loaded yet");
         window.location.href = "/login";
         return;
       }
@@ -76,7 +75,7 @@ function UserDashboard() {
                 <div>
                     <div className="col-span-3">
                         <h2 className="text-xl md:text-2xl">
-                            Good Morning! {user?.name || "Guest"}
+                            Welcome {user?.name || "Guest"}
                         </h2>
                         <p className="text-xs md:text-[13px] text-gray-400 mt-1.5">
                             {moment().format("dddd Do MMMM YYYY")}
@@ -84,12 +83,13 @@ function UserDashboard() {
                     </div>
                 </div>
                 <div className='flex gap-10 mt-4'>
-                  <button 
-                    className={`btn ${isStarted ? 'bg-green-600':'bg-blue-500 hover:bg-blue-600'}`} 
+                <button 
+                    className={`btn w-[117.3px] transition-all duration-150 active:scale-99 active:opacity-80 ${isStarted ? 'bg-green-600' : 'bg-blue-500 hover:bg-blue-600'}`} 
                     onClick={handleStart}
-                    > {isStarted ? "Punch Out" : "Punch In"}
-                  </button>
-                  {/* <button className='btn c' onClick={handleStop}>Stop</button> */}
+                    >
+                    {isStarted ? "Punch Out" : "Punch In"}
+                </button>
+
                 </div>
             </div>
             <div className='grid grid-cols-1 md:grid-cols-1 gap-6 my-4 md:my-6'>
@@ -123,4 +123,5 @@ function UserDashboard() {
 
 export default UserDashboard;
 
+////
 
