@@ -27,9 +27,9 @@ function UserDashboard() {
     const [isStarted, setIsStarted] = useState(false);
 
 
-    const prepareChartData = (data) => {
-        setBarChartData(data);
-    }
+    // const prepareChartData = (data) => {
+    //     setBarChartData(data);
+    // }
 
     const getDashboardData = async () => {
         try {
@@ -38,7 +38,7 @@ function UserDashboard() {
                 if (response.data?.isPunchedOut===false){
                     setIsStarted(true);
                 }
-                prepareChartData(response.data.workedHoursPerDay);
+                setBarChartData(response.data.workedHoursPerDay);
             }
             
         } catch (error) {

@@ -54,8 +54,8 @@ const getSummary = async (userId) => {
             }
         });
 
-        const hours = totalMs / 1000 / 60 / 60; // convert ms to hours
-        workedHoursPerDay.push({ date, hours});
+        const hours = totalMs / 1000 / 60 / 60; 
+        workedHoursPerDay.push({ date, hours });
     }
     return {workedHoursPerDay, isPunchedOut};
 }
@@ -64,7 +64,7 @@ const getAdminSummary = async (req) => {
     const userIds = req?.body
     const punches = await Punch.find({ userId: { $in: userIds } }).sort({ inTime: 1 });
     const groupedByUser = {};
-    const userMap = {}; // for collecting user names
+    const userMap = {};
 
     punches.forEach(punch => {
         const date = new Date(parseInt(punch.inTime)).toISOString().split('T')[0];
@@ -116,14 +116,9 @@ const getAdminSummary = async (req) => {
         return row;
     });
 
-    const lastUserPunches = punches.filter(p => p.userId.toString() === userIds[userIds.length - 1]);
-    const lastPunch = lastUserPunches[lastUserPunches.length - 1];
-    const isPunchedOut = lastPunch?.outTime !== null;
-
     return {
         workedHoursPerDay,
-        users: users.map(u => ({ _id: u._id.toString(), name: u.name })),
-        isPunchedOut
+        users: users.map(u => ({ _id: u._id.toString(), name: u.name }))
     };
 };
 
@@ -143,3 +138,6 @@ const getPunchSummary = async (req, res) => {
 }
 
 module.exports = { recordPunch, getPunchSummary };
+
+
+//

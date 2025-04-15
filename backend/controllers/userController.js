@@ -10,21 +10,7 @@ const bcrypt = require("bcryptjs");
 const getUsers = async (req, res) => {
     try {
         const users = await User.find({ role: 'member' }).select("-password");
-
-        const usersWithTaskCounts = await Promise.all(users.map(async (user) => {
-            const pendingTasks = await Task.countDocuments({ assignedTo: user._id, status: "pending" });
-            const inProgressTasks = await Task.countDocuments({ assignedTo: user._id, status: "in Progress" });
-            const completedTasks = await Task.countDocuments({ assignedTo: user._id, status: "completed" });
-
-            return {
-                ...user._doc,
-                pendingTasks,
-                inProgressTasks,
-                completedTasks,
-            };
-        }));
-
-        res.json(usersWithTaskCounts);
+        res.json(users);
     } catch (error) {
         console.error("Error in getUsers:", error);
         res.status(500).json({ message: "Server error", error: error.message });
@@ -32,7 +18,7 @@ const getUsers = async (req, res) => {
 };
 
 
-// @desc    Get user by ID
+// @desc    Get user by Id////]
 // @route   GET /api/users/:id
 // @access  Private
 const getUserById = async (req, res) => {

@@ -14,7 +14,7 @@ import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../../utils/axiosInstance';
 import { API_PATHS } from '../../utils/apiPaths';
 import moment from 'moment';
-import CustomBarChart from '../../components/Charts/CustomBarChartAdmin';
+import CselectedUsersustomBarChart from '../../components/Charts/CustomBarChartAdmin';
 const COLORS=["#8D51FF","#00BBDB","#7BCE00"]
 import { Trash2 } from 'lucide-react';
 
@@ -73,16 +73,16 @@ function Dashboard() {
         setSelectedUsers([])
     }
     
-    //prepare Chart data
-    const prepareChartData = (data) => {
-        setBarChartData(data);
-    }
+    // //prepare Chart data
+    // const prepareChartData = (data) => {
+    //     setBarChartData(data);
+    // }
 
     const getDashboardData = async (selectedUserIds) => {
         try {
             const response = await axiosInstance.post(API_PATHS.TIMELOG.GET_SUMMARY, selectedUserIds);
             if (response?.data) {
-                prepareChartData(response?.data)
+                setBarChartData(response?.data)
             }
 
         } catch (error) {
@@ -227,4 +227,9 @@ function Dashboard() {
 export default Dashboard;
 
 
-////
+
+
+
+
+
+

@@ -7,10 +7,9 @@ const protect = async (req, res, next) => {
         let token = req.headers.authorization;
 
         if (token && token.startsWith("Bearer")) {
-            token = token.split(" ")[1]; // Extract token from "Bearer <token>"
+            token = token.split(" ")[1]; 
             const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-            req.user = await User.findById(decoded.id).select("-password"); // Attach user to request
+            req.user = await User.findById(decoded.id).select("-password"); 
             next();
         } else {
             return res.status(401).json({ message: "Not authorized, no token" });
@@ -31,3 +30,5 @@ const adminOnly = (req, res, next) => {
 
 
 module.exports = { protect, adminOnly };
+
+

@@ -19,7 +19,7 @@ const generateToken = (user) => {
 const registerUser=async (req,res)=>{
     try{
 
-        const {name,email,password,profileImageUrl,adminInviteToken}=req.body
+        const {name, email, password, profileImageUrl, adminInviteToken}=req.body
 
         //check if user already exists
         const userExists=await User.findOne({email})
@@ -58,7 +58,7 @@ const registerUser=async (req,res)=>{
         })
 
     }catch(error){
-        res.status(500).json({message:"Server error",error:error.message})
+        res.status(500).json({message:"Server error", error:error.message})
     }
 }
 
@@ -68,7 +68,7 @@ const registerUser=async (req,res)=>{
 const loginUser=async (req,res)=>{
     try{
 
-        const {email,password}=(req.query)
+        const {email, password}=(req.query)
 
         const user=await User.findOne({email})
         
@@ -77,7 +77,7 @@ const loginUser=async (req,res)=>{
         }
 
         //Compare password
-        const isMatch=await bcrypt.compare(password,user.password)
+        const isMatch=await bcrypt.compare(password, user.password)
         if(!isMatch){
             return res.status(401).json({message:"invalid email or password"})
         }
@@ -85,7 +85,7 @@ const loginUser=async (req,res)=>{
 
         //Return user data with JWT
         res.json({
-            _id:user.id_,
+            _id:user.id,
             name:user.name,
             email:user.email,
             role:user.role,
@@ -94,7 +94,7 @@ const loginUser=async (req,res)=>{
         })
         
     }catch(error){
-        res.status(500).json({message:"Server errorrr",error:error.message})
+        res.status(500).json({message:"Server error",error:error.message})
     }
 }
 
@@ -150,4 +150,4 @@ const updateUserProfile=async (req,res)=>{
 
 module.exports={registerUser,loginUser,getUserProfile,updateUserProfile}
 
-//]//
+//]

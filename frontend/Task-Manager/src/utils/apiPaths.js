@@ -1,12 +1,12 @@
 // export const BASE_URL = "http://localhost:8084"; // Replace with your actual backend URL
 
-// export const BASE_URL =
-//   import.meta.env.MODE === "development"
-//     ? "http://localhost:8084"
-//     : "https://task-manager-backend.onrender.com";
-export const BASE_URL = "https://trackmateog-2.onrender.com"; 
+export const BASE_URL =
+  import.meta.env.MODE === "development"
+    ? "http://localhost:8084"
+    : "https://trackmateog-2.onrender.com";
+// export const BASE_URL = "https://trackmateog-2.onrender.com"; 
 
-
+// console.log(import.meta.env.MODE);
 
 export const API_PATHS = {
   AUTH: {

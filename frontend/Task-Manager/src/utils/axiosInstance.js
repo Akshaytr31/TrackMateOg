@@ -30,7 +30,9 @@ axiosInstance.interceptors.response.use(
         if (error.response) {
             if (error.response.status === 401) {
                 // Redirect to login page on unauthorized access
-                window.location.href = "/login";
+                if (window.location.pathname !== "/login") {
+                    window.location.href = "/login";
+                }
             } else if (error.response.status === 500) {
                 console.error("Server error, Please try again later.");
             }

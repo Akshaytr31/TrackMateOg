@@ -6,7 +6,7 @@ const connectDB = require("./config/db");
 
 const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
-const taskRoutes = require("./routes/taskRoutes");
+// const taskRoutes = require("./routes/taskRoutes");
 const timeLogRoutes = require('./routes/timeLog'); // use exact lowercase match
 
 
@@ -28,7 +28,7 @@ const allowedOrigins = [
   
   app.use(cors({
     origin: function (origin, callback) {
-        console.log("Request Origin:", origin);
+        // console.log("Request Origin:", origin);
         if (!origin || allowedOrigins.includes(origin)) {
             callback(null, true);
         } else {
@@ -51,15 +51,13 @@ app.use(express.json());
 app.use('/api/timeLog', timeLogRoutes);
 app.use("/api/auth", authRoutes); 
 app.use("/api/users", userRoutes);
-app.use("/api/tasks", taskRoutes);
+// app.use("/api/tasks", taskRoutes);
 // app.use("/api/reports", reportRoutes);
 
 //Server upload folder
-app.use("/uploads",express.static(path.join(__dirname,"uploads")))
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Start Server
 const PORT = process.env.PORT || 8084;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
-
-///]]]
