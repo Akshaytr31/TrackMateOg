@@ -14,7 +14,7 @@ import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../../utils/axiosInstance';
 import { API_PATHS } from '../../utils/apiPaths';
 import moment from 'moment';
-import CselectedUsersustomBarChart from '../../components/Charts/CustomBarChartAdmin';
+import CustomBarChart from '../../components/Charts/CustomBarChartAdmin';
 const COLORS=["#8D51FF","#00BBDB","#7BCE00"]
 import { Trash2 } from 'lucide-react';
 
