@@ -10,4 +10,3 @@ export default function InfoCard({ icon, label, value, color }) {
   );
 }
 
-

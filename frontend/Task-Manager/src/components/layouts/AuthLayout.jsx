@@ -5,7 +5,7 @@ function AuthLayout({children}) {
     return (
         <div className="flex">
           <div className="w-screen h-screen md:w-[55vw] px-12 pt-8 pb-12">
-            <h2 className="text-2xl font-medium text-black">Task Manager</h2>
+            <h2 className="text-3xl font-medium text-black">Time Tracker</h2>
             {children}
           </div>
       
@@ -20,4 +20,4 @@ function AuthLayout({children}) {
 export default AuthLayout
 
 
-///]
+////
