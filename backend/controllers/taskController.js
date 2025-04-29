@@ -1,247 +1,117 @@
 const Task = require("../models/Task");
 
-// @desc    Get all tasks (Admin: all, User: only assigned tasks)
-// @route   GET /api/tasks
-// @access  Private
-const getTasks = async (req, res) => {
-    try {
-        const { status } = req.query;
-        let filter = {};
-
-        if (status) {
-            filter.status = status;
-        }
-
-        let tasks;
-        if (req.user.role === "admin") {
-            tasks = await Task.find(filter).populate("assignedTo", "name email profileImageUrl");
-        } else {
-            tasks = await Task.find({ ...filter, assignedTo: { $in: [req.user._id] } })
-                .populate("assignedTo", "name email profileImageUrl");
-        }
-
-        // Add completed todoChecklist count to each task
-        tasks = tasks.map((task) => ({
-            ...task._doc,
-            completedTodoCount: task.todoChecklist.filter((item) => item.completed).length,
-        }));
-
-        // Status summary counts
-        const allTasks = await Task.countDocuments(req.user.role === "admin" ? {} : { assignedTo: req.user._id });
-        const pendingTasks = await Task.countDocuments({ ...filter, status: "Pending", ...(req.user.role !== "admin" && { assignedTo: req.user._id }) });
-        const inProgressTasks = await Task.countDocuments({ ...filter, status: "In Progress", ...(req.user.role !== "admin" && { assignedTo: req.user._id }) });
-        const completedTasks = await Task.countDocuments({ ...filter, status: "Completed", ...(req.user.role !== "admin" && { assignedTo: req.user._id }) });
-
-        res.json({
-            tasks,
-            statusSummary: {
-                all: allTasks,
-                pendingTasks,
-                inProgressTasks,
-                completedTasks,
-            },
-        });
-    } catch (error) {
-        res.status(500).json({ message: "Server error", error: error.message });
-    }
-};
-
-// @desc    Get task by ID
-// @route   GET /api/tasks/:id
-// @access  Private
-const getTaskById = async (req, res) => {
-    try {
-        const task = await Task.findById(req.params.id).populate("assignedTo", "name email profileImageUrl");
-
-        if (!task) return res.status(404).json({ message: "Task not found" });
-
-        res.json(task);
-    } catch (error) {
-        res.status(500).json({ message: "Server error", error: error.message });
-    }
-};
-
-// @desc    Create a new task (Admin only)
-// @route   POST /api/tasks
-// @access  Private (Admin)
+// Create Task
 const createTask = async (req, res) => {
-    try {
-        const { title, description, priority, dueDate, assignedTo, attachments, todoChecklist } = req.body;
+  try {
+    console.log("Incoming task data:", req.body);
 
-        if (!Array.isArray(assignedTo)) {
-            return res.status(400).json({ message: "assignedTo must be an array of user IDs." });
-        }
-
-        const task = await Task.create({
-            title,
-            description,
-            priority,
-            dueDate,
-            assignedTo,
-            createdBy: req.user._id,
-            todoChecklist,
-            attachments,
-        });
-
-        res.status(201).json({ message: "Task created successfully.", task });
-    } catch (error) {
-        res.status(500).json({ message: "Server error", error: error.message });
+    if (!req.body.title) {
+      return res.status(400).json({ message: "Title is required" });
     }
+
+    const task = await Task.create(req.body);
+    res.status(201).json(task);
+  } catch (error) {
+    console.error("Error in createTask:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
 };
 
-// @desc    Update task details
-// @route   PUT /api/tasks/:id
-// @access  Private
-const updateTask = async (req, res) => {
-    try {
-        const task = await Task.findById(req.params.id);
+// Get All Tasks
+// GET /api/tasks?userId=abc123
+const getTasks = async (req, res) => {
+  const { userId } = req.query;
 
-        if (!task) return res.status(404).json({ message: "Task not found" });
+  const filter = userId ? { assignedTo: userId } : {};
 
-        task.title = req.body.title || task.title;
-        task.description = req.body.description || task.description;
-        task.priority = req.body.priority || task.priority;
-        task.dueDate = req.body.dueDate || task.dueDate;
-        task.todoChecklist = req.body.todoCheckList || task.todoChecklist;
-        task.attachments = req.body.attachments || task.attachments;
-
-        if (req.body.assignedTo) {
-            if (!Array.isArray(req.body.assignedTo)) {
-                return res.status(400).json({ message: "assignedTo must be an array of user IDs" });
-            }
-            task.assignedTo = req.body.assignedTo;
-        }
-
-        const updatedTask = await task.save();
-        res.json({ message: "Task updated successfully", updatedTask });
-
-    } catch (error) {
-        res.status(500).json({ message: "Server error", error: error.message });
-    }
+  try {
+    const tasks = await Task.find(filter).populate("assignedTo");
+    res.json(tasks);
+  } catch (error) {
+    res.status(500).json({ error: "Error fetching tasks" });
+  }
 };
 
-// @desc    Delete a task (Admin only)
-// @route   DELETE /api/tasks/:id
-// @access  Private
+
+
+// PUT /api/tasks/:taskId/assign
+const assignUsersToTask = async (req, res) => {
+  const { taskId } = req.params;
+  const { assignedTo } = req.body;
+
+  try {
+      const task = await Task.findByIdAndUpdate(taskId, { assignedTo }, { new: true });
+      res.json(task);
+  } catch (err) {
+      res.status(500).json({ error: "Failed to assign users" });
+  }
+};
+
+
+
+// Dummy routes (placeholders)
+const getDashboardData = (req, res) => {
+  res.json({ message: "Dashboard data placeholder" });
+};
+
+const getUserDashboardData = (req, res) => {
+  res.json({ message: "User dashboard data placeholder" });
+};
+
+const getTaskById = (req, res) => {
+  res.json({ message: `Fetching task with ID ${req.params.id}` });
+};
+
+const updateTask = (req, res) => {
+  res.json({ message: `Updating task with ID ${req.params.id}` });
+};
+
+
+
 const deleteTask = async (req, res) => {
-    try {
-        const task = await Task.findById(req.params.id);
-        if (!task) return res.status(404).json({ message: "Task not found" });
-
-        await task.deleteOne();
-        res.json({ message: "Task deleted successfully" });
-    } catch (error) {
-        res.status(500).json({ message: "Server error", error: error.message });
-    }
-};
-
-// @desc    Update task status
-// @route   PUT /api/tasks/:id/status
-// @access  Private
-const updateTaskStatus = async (req, res) => {
-    try {
-        const task = await Task.findById(req.params.id);
-        if (!task) return res.status(404).json({ message: "Task not found" });
-
-        const isAssigned = task.assignedTo.some((userId) => userId.toString() === req.user._id.toString());
-
-        if (!isAssigned && req.user.role !== "admin") {
-            return res.status(403).json({ message: "Not authorized" });
-        }
-
-        task.status = req.body.status || task.status;
-
-        if (task.status === "Completed" && task.todoChecklist) {
-            task.todoChecklist.forEach((item) => {
-                item.completed = true;
-            });
-            task.progress = 100;
-        }
-
-        await task.save();
-        res.json({ message: "Task status updated", task });
-    } catch (error) {
-        res.status(500).json({ message: "Server error", error: error.message });
-    }
-};
-
-// @desc    Dashboard data (Admin only)
-// @route   GET /api/tasks/dashboard-data
-// @access  Private
-const getDashboardData = async (req, res) => {
-    try {
-        const totalTasks = await Task.countDocuments();
-        const pendingTasks = await Task.countDocuments({ status: "Pending" });
-        const completedTasks = await Task.countDocuments({ status: "Completed" });
-        const overdueTasks = await Task.countDocuments({ status: { $ne: "Completed" }, dueDate: { $lt: new Date() } });
-
-        res.status(200).json({
-            statistics: {
-                totalTasks,
-                pendingTasks,
-                completedTasks,
-                overdueTasks,
-            },
-        });
-    } catch (error) {
-        res.status(500).json({ message: "Server error", error: error.message });
-    }
-};
-
-// @desc    Dashboard data (User-specific)
-// @route   GET /api/tasks/user-dashboard-data
-// @access  Private
-const getUserDashboardData = async (req, res) => {
-    try {
-        const userId = req.user._id;
-
-        const totalTasks = await Task.countDocuments({ assignedTo: userId });
-        const pendingTasks = await Task.countDocuments({ assignedTo: userId, status: "Pending" });
-        const completedTasks = await Task.countDocuments({ assignedTo: userId, status: "Completed" });
-
-        res.status(200).json({
-            statistics: {
-                totalTasks,
-                pendingTasks,
-                completedTasks,
-            },
-        });
-    } catch (error) {
-        res.status(500).json({ message: "Server error", error: error.message });
-    }
+  try {
+    await Task.findByIdAndDelete(req.params.id);
+    res.status(200).json({ message: "Task deleted" });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to delete task" });
+  }
 };
 
 
-// @desc    Update task checklist
-// @route   PUT /api/tasks/:id/todo
-// @access  Private
-const updateTaskCheckList = async (req, res) => {
-    try {
-        const task = await Task.findById(req.params.id);
-        if (!task) return res.status(404).json({ message: "Task not found" });
+const updateTaskStatus=async (req,res)=>{
+  const {id}=req.params
+  const {status}=req.body
 
-        task.todoChecklist = req.body.todoChecklist || task.todoChecklist;
-        await task.save();
-
-        res.json({ message: "Task checklist updated successfully", task });
-    } catch (error) {
-        res.status(500).json({ message: "Server error", error: error.message });
+  try{
+    const updatedTask=await Task.findByIdAndUpdate(
+      id,
+      {status},
+      {new:true}
+    );
+    if (!updatedTask){
+      return res.status(404).json({message:"Task not found"})
     }
-};
+    res.json(updatedTask)
+  }catch(error){
+    console.error("Error updating task status:",error)
+    res.status(500).json({message:"Failed to update task status"})
+  }
+}
 
+const updateTaskCheckList = (req, res) => {
+  res.json({ message: `Updating checklist for task with ID ${req.params.id}` });
+};
 
 module.exports = {
-    getTasks,
-    getTaskById,
-    createTask,
-    updateTask,
-    deleteTask,
-    updateTaskStatus,
-    updateTaskCheckList,  
-    getDashboardData,
-    getUserDashboardData,
+  createTask,
+  getTasks,
+  getDashboardData,
+  getUserDashboardData,
+  getTaskById,
+  updateTask,
+  deleteTask,
+  updateTaskStatus,
+  updateTaskCheckList,
+  assignUsersToTask
 };
 
-
-
-////]

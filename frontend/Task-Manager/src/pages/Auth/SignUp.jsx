@@ -43,14 +43,12 @@ function SignUp() {
       return;
     }
   
-    setError(null); // Clear previous errors
+    setError(null); 
     console.log('Logging in with:', email, password);
   
-    // Proceed with API call
 
     try {
 
-      //Upload image if present
       if(profilePic){
         const imgUploadRes=await uploadImage(profilePic)
         profileImageUrl = imgUploadRes.imageUrl || "";

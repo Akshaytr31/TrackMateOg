@@ -37,8 +37,24 @@
 }
 
 .card-btn{
-  @apply flex items-center gap-3 text-[12px] font-medium text-gray-700 hover:text-blue-500 bg-gray-50 hover:bg-blue-50 px-4 py-1.5 rounded-lg border-gray-200/50 cursor-pointer;
+  @apply flex items-center gap-3 text-[12px] font-medium text-blue-700 hover:text-blue-500 bg-gray-50 hover:bg-blue-100 hover:border-blue-100 px-4 py-1.5 rounded-lg border-blue-700 border-[1px] cursor-pointer transition-all duration-350 active:scale-95 ease-in-out ;
 }
+
+.card-btn-user-list{
+  @apply flex items-center gap-3 text-[12px] font-medium text-gray-500 hover:text-gray-900 bg-gray-100 hover:bg-gray-300 px-4 py-1.5 rounded-lg  cursor-pointer transition-all duration-350 active:scale-95 ease-in-out ;
+}
+
+
+.card-btn-create-task{
+  @apply flex items-center gap-3 text-[12px] font-medium text-white hover:text-gray-700 bg-gray-400 hover:bg-white px-4 py-1.5 rounded-lg cursor-pointer transition-all duration-350 active:scale-95 ease-in-out ;
+}
+
+.card-btn-task{
+  @apply flex items-center gap-3 text-[12px] font-medium text-red-600 
+  hover:text-white hover:bg-[#ff0000] px-4 py-1.5 rounded-lg 
+  border-[#ff0000] hover:font-bold border-[1px] cursor-pointer 
+  transition-all duration-350 ease-in-out active:scale-95;
+  }
 
 .form-card{
   @apply bg-white p-6 rounded-lg shadow-md shadow-gray-100 border border-gray-200/50
@@ -59,4 +75,25 @@
 }
 .userList{
   @apply bg-gray-100 p-6 rounded-2xl shadow-md shadow-gray-200 border border-gray-200/50
+}
+
+.taskLi{
+  @apply p-[10px] 
+  list-none 
+  rounded-xl
+   shadow-blue-200 border
+   border-blue-300/50
+  hover:text-blue-400 bg-gray-50 hover:bg-blue-50 px-4 py-1.5 cursor-pointer;
+  
+}
+
+.task{
+  @apply p-6 rounded-2xl shadow-md shadow-blue-100 border border-blue-200/50
+}
+
+.truncated-btn {
+  @apply text-[12px] px-4 py-1.5 font-medium rounded-lg border border-gray-200/50 bg-gray-50 text-gray-700 
+         max-w-[90px] truncate whitespace-nowrap overflow-hidden 
+         hover:max-w-[300px] transition-all duration-300 ease-in-out 
+         inline-block w-fit cursor-pointer h-[30px] hover:text-blue-700 hover:bg-blue-100 md:max-w-[300px] active:scale-96;
 }

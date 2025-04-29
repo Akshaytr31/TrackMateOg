@@ -26,10 +26,8 @@ axiosInstance.interceptors.request.use(
 axiosInstance.interceptors.response.use(
     (response) => response,
     (error) => {
-        // Handle common errors globally
         if (error.response) {
             if (error.response.status === 401) {
-                // Redirect to login page on unauthorized access
                 if (window.location.pathname !== "/login") {
                     window.location.href = "/login";
                 }
@@ -46,4 +44,5 @@ axiosInstance.interceptors.response.use(
 export default axiosInstance;
 
 
-/////
+
+/////]

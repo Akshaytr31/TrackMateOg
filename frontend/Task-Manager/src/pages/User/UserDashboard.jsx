@@ -14,7 +14,10 @@ import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../../utils/axiosInstance';
 import { API_PATHS } from '../../utils/apiPaths';
 import CustomBarChart from '../../components/Charts/CustomBarChart';
+import ViewTaskDetails from '../User/ViewTaskDetails'
 import moment from 'moment';
+import TaskChart from '../../components/Charts/CustomChartUserTasks'
+
 const COLORS=["#8D51FF","#00BBDB","#7BCE00"]
 
 
@@ -25,11 +28,12 @@ function UserDashboard() {
     const navigate = useNavigate();
     const [barChartData, setBarChartData] = useState([]);  
     const [isStarted, setIsStarted] = useState(false);
+    const [myTasks, setMyTasks] = useState([]);
+
+    const [activeGraph, setActiveGraph] = useState("time");
+    const [taskStats, setTaskStats] = useState([]);
 
 
-    // const prepareChartData = (data) => {
-    //     setBarChartData(data);
-    // }
 
     const getDashboardData = async () => {
         try {
@@ -65,22 +69,52 @@ function UserDashboard() {
             setIsStarted(false);
         }
       } catch (err) {
-        console.log("Check-in failed", err);
+        console.error("Check-in failed", err);
       }
     };
 
+
+
+
+const fetchMyTasks = async () => {
+    try {
+        const res = await axiosInstance.get(`/api/tasks/assigned/${user._id}`);
+ 
+        setMyTasks(res.data);
+       
+        // Group completed tasks by date
+        const completedTasks = res.data.filter(task => task.status.toLowerCase() === 'completed');
+        const grouped = completedTasks.reduce((acc, task) => {
+        const date = new Date(task.updatedAt).toISOString().split('T')[0];
+            acc[date] = (acc[date] || 0) + 1;
+            return acc;
+        }, {});
+    
+        const taskChartData = Object.entries(grouped).map(([date, count]) => ({
+            date,
+            count,
+        }));
+        setTaskStats(taskChartData);
+    } catch (err) {
+        console.error("Couldn't load tasks", err);
+    }
+};
+    
+      
+    useEffect(() => {
+    if (user?._id) fetchMyTasks();
+    }, [user]);
+    
     return (
         <DashboardLayout activeMenu="Dashboard">
             <div className="card my-5">
                 <div>
-                    <div className="col-span-3">
-                        <h2 className="text-xl md:text-2xl">
-                            Welcome {user?.name || "Guest"}
-                        </h2>
-                        <p className="text-xs md:text-[13px] text-gray-400 mt-1.5">
-                            {moment().format("dddd Do MMMM YYYY")}
-                        </p>
-                    </div>
+                    <div className="task my-5 bg-[#6b707a]">
+                    <h2 className="text-xl md:text-2xl text-white font-medium">
+                        Welcome {user?.name || "Guest"}
+                    </h2>
+                    <p className="text-xs text-gray-300 mt-1.5">{moment().format("dddd Do MMMM YYYY")}</p>
+                </div>
                 </div>
                 <div className='flex gap-10 mt-4'>
                 <button 
@@ -98,30 +132,35 @@ function UserDashboard() {
                     <div className='card'>
                         <div className='flex items-center justify-between'>
                             <h5 className='font-medium'>Work Flow Level</h5>
+                            <div className='flex gap-[30px]'>
+                                <button
+                                    className={`truncated-btn  ${activeGraph === "time" ? "bg-blue-500 text-white" : ""}`}
+                                    onClick={() => setActiveGraph("time")}
+                                >
+                                    Time Graph
+                                </button>
+                                <button
+                                    className={`truncated-btn  ${activeGraph === "task" ? "bg-blue-500 text-white" : ""}`}
+                                    onClick={() => setActiveGraph("task")}
+                                >
+                                    Task Graph
+                                </button>
+                            </div>
+
                         </div>
-                        <CustomBarChart
-                            data={barChartData}
-                        />
+                        {activeGraph === "time" ? (
+                            <CustomBarChart data={barChartData} />
+                            ) : (
+                            <TaskChart data={taskStats} />
+                            )}
                     </div>
                 </div>
-
-                {/* <div className='md:col-span-2'>
-                    <div className='card'>
-                        <div className='flex items justify-between'>
-                            <h5 className='card-btn'>Recent Tasks</h5>
-                            <button className='card-btn' onClick={onSeeMore}>
-                                See All <LuArrowDown className='text-base'/> 
-                            </button>
-                        </div>
-                        <TaskListTable tableData={dashboardData?.recentTasks || []}/>
-                    </div>
-                </div> */}
             </div>
+            <ViewTaskDetails/>
+
         </DashboardLayout>
     );
 }
 
 export default UserDashboard;
-
-////
 

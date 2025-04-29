@@ -8,6 +8,8 @@ const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
 // const taskRoutes = require("./routes/taskRoutes");
 const timeLogRoutes = require('./routes/timeLog'); // use exact lowercase match
+const taskRoutes = require('./routes/taskRoutes'); // adjust path if needed
+
 
 
 
@@ -37,7 +39,7 @@ const allowedOrigins = [
         }
     },
     credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    methods: ["GET", "POST", "PUT","PATCH", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
   }));
 
@@ -52,7 +54,7 @@ app.use(express.json());
 app.use('/api/timeLog', timeLogRoutes);
 app.use("/api/auth", authRoutes); 
 app.use("/api/users", userRoutes);
-// app.use("/api/tasks", taskRoutes);
+app.use("/api/tasks", taskRoutes);
 // app.use("/api/reports", reportRoutes);
 
 //Server upload folder

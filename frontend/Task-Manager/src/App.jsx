@@ -11,6 +11,7 @@ import {
 } from "react-router-dom"
 import Login from './pages/Auth/Login'
 import SignUp from './pages/Auth/SignUp'
+import UnAuthorizedAccess from './pages/Auth/UnAuthorizedAccess' 
 import PrivateRoute from './pages/routes/PrivateRoute'
 import Dashboard from './pages/Admin/Dashboard'
 import ManageTasks from './pages/Admin/ManageTasks'
@@ -29,14 +30,12 @@ function App() {
           <Routes>
             <Route path="/login" element={<Login/>}/>
             <Route path="/signup" element={<SignUp/>}/>
+            <Route path="/UnAuthorizedAccess" element={<UnAuthorizedAccess/>}/>
 
             {/* admin routes */}
 
             <Route element={<PrivateRoute allowedRoles={["admin"]}/>}>
               <Route path="/admin/dashboard" element={<Dashboard/>}/>
-              <Route path="/admin/tasks" element={<ManageTasks/>}/>
-              {/* <Route path="/admin/create-task" element={<CreateTask/>}/> */}
-              <Route path="/admin/users" element={<ManageUser/>}/>
             </Route>
 
             {/* user route */}
@@ -75,7 +74,4 @@ const Root =()=>{
 
 
 
-
-///
-
-
+////

@@ -6,7 +6,7 @@ const jwt=require("jsonwebtoken")
 //General jwt Token
 const generateToken = (user) => {
     return jwt.sign(
-        { id: user._id, role: user.role },  // Include role
+        { id: user._id, role: user.role },  
         process.env.JWT_SECRET,
         { expiresIn: "7d" }
     );
@@ -19,16 +19,14 @@ const generateToken = (user) => {
 const registerUser=async (req,res)=>{
     try{
 
-        const {name, email, password, profileImageUrl, adminInviteToken}=req.body
+        const { name, email, password, profileImageUrl, adminInviteToken }=req.body
 
         //check if user already exists
         const userExists=await User.findOne({email})
         if(userExists){
             return res.status(400).json({message:"user already exists"})
         }
-
-
-        //Determine user role:adimn if correct token is provided ,otherwise Member
+   
         let role="member"
         if(adminInviteToken&&adminInviteToken==process.env.ADMIN_INVITE_TOKEN){
             role="admin"
@@ -57,7 +55,7 @@ const registerUser=async (req,res)=>{
             token:generateToken(user._id),
         })
 
-    }catch(error){
+    } catch(error){
         res.status(500).json({message:"Server error", error:error.message})
     }
 }
@@ -68,7 +66,7 @@ const registerUser=async (req,res)=>{
 const loginUser=async (req,res)=>{
     try{
 
-        const {email, password}=(req.query)
+        const { email, password }=(req.query)
 
         const user=await User.findOne({email})
         
@@ -149,5 +147,3 @@ const updateUserProfile=async (req,res)=>{
 }
 
 module.exports={registerUser,loginUser,getUserProfile,updateUserProfile}
-
-//]
