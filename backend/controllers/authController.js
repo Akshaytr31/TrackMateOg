@@ -28,7 +28,7 @@ const registerUser=async (req,res)=>{
         }
    
         let role="member"
-        if(adminInviteToken&&adminInviteToken==process.env.ADMIN_INVITE_TOKEN){
+        if(adminInviteToken===process.env.ADMIN_INVITE_TOKEN){
             role="admin"
         }
 
@@ -59,7 +59,7 @@ const registerUser=async (req,res)=>{
         res.status(500).json({message:"Server error", error:error.message})
     }
 }
-
+//]
 //@desc Login user
 //@route POST /api/auth/login
 //@access Public
@@ -147,3 +147,6 @@ const updateUserProfile=async (req,res)=>{
 }
 
 module.exports={registerUser,loginUser,getUserProfile,updateUserProfile}
+
+
+/////

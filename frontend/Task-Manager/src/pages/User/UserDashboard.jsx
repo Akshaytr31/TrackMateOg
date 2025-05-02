@@ -18,15 +18,15 @@ import ViewTaskDetails from '../User/ViewTaskDetails'
 import moment from 'moment';
 import TaskChart from '../../components/Charts/CustomChartUserTasks'
 
-const COLORS=["#8D51FF","#00BBDB","#7BCE00"]
+const COLORS = ["#8D51FF", "#00BBDB", "#7BCE00"]
 
 
 function UserDashboard() {
-    useUserAuth(); 
+    useUserAuth();
 
-    const { user } = useContext(UserContext); 
+    const { user } = useContext(UserContext);
     const navigate = useNavigate();
-    const [barChartData, setBarChartData] = useState([]);  
+    const [barChartData, setBarChartData] = useState([]);
     const [isStarted, setIsStarted] = useState(false);
     const [myTasks, setMyTasks] = useState([]);
 
@@ -34,96 +34,86 @@ function UserDashboard() {
     const [taskStats, setTaskStats] = useState([]);
 
 
-
     const getDashboardData = async () => {
         try {
             const response = await axiosInstance.post(API_PATHS.TIMELOG.GET_SUMMARY);
             if (response.data) {
-                if (response.data?.isPunchedOut===false){
+                if (response.data?.isPunchedOut === false) {
                     setIsStarted(true);
                 }
                 setBarChartData(response.data.workedHoursPerDay);
             }
-            
+
         } catch (error) {
             console.error("Error fetching dashboard data:", error);
         }
     };
-    
+
     useEffect(() => {
         getDashboardData();
     }, [user]);
 
     const handleStart = async () => {
-      if (!user) {
-        window.location.href = "/login";
-        return;
-      }
-    
-      try {
-        const response = await axiosInstance.get("/api/timelog/punch");
-
-        if(response.data?.punch.outTime===null){
-            setIsStarted(true);
-        }else{
-            setIsStarted(false);
+        if (!user) {
+            window.location.href = "/login";
+            return;
         }
-      } catch (err) {
-        console.error("Check-in failed", err);
-      }
+
+        try {
+            const response = await axiosInstance.get("/api/timelog/punch");
+
+            if (response.data?.punch.outTime === null) {
+                setIsStarted(true);
+            } else {
+                setIsStarted(false);
+            }
+        } catch (err) {
+            console.error("Check-in failed", err);
+        }
     };
 
 
 
 
-const fetchMyTasks = async () => {
-    try {
-        const res = await axiosInstance.get(`/api/tasks/assigned/${user._id}`);
- 
-        setMyTasks(res.data);
-       
-        // Group completed tasks by date
-        const completedTasks = res.data.filter(task => task.status.toLowerCase() === 'completed');
-        const grouped = completedTasks.reduce((acc, task) => {
-        const date = new Date(task.updatedAt).toISOString().split('T')[0];
-            acc[date] = (acc[date] || 0) + 1;
-            return acc;
-        }, {});
-    
-        const taskChartData = Object.entries(grouped).map(([date, count]) => ({
-            date,
-            count,
-        }));
-        setTaskStats(taskChartData);
-    } catch (err) {
-        console.error("Couldn't load tasks", err);
-    }
-};
-    
-      
+    const fetchMyTasks = async () => {
+        try {
+            const res = await axiosInstance.get(`/api/tasks/assigned/${user._id}`);
+
+            setMyTasks(res.data);
+
+            // Group completed tasks by date
+            const completedTasks = res.data.filter(task => task.status.toLowerCase() === 'completed');
+            const grouped = completedTasks.reduce((acc, task) => {
+                const date = new Date(task.updatedAt).toISOString().split('T')[0];
+                acc[date] = (acc[date] || 0) + 1;
+                return acc;
+            }, {});
+
+            const taskChartData = Object.entries(grouped).map(([date, count]) => ({
+                date,
+                count,
+            }));
+            setTaskStats(taskChartData);
+        } catch (err) {
+            console.error("Couldn't load tasks", err);
+        }
+    };
+
+
     useEffect(() => {
-    if (user?._id) fetchMyTasks();
+        if (user?._id) fetchMyTasks();
     }, [user]);
-    
+
     return (
         <DashboardLayout activeMenu="Dashboard">
             <div className="card my-5">
                 <div>
                     <div className="task my-5 bg-[#6b707a]">
-                    <h2 className="text-xl md:text-2xl text-white font-medium">
-                        Welcome {user?.name || "Guest"}
-                    </h2>
-                    <p className="text-xs text-gray-300 mt-1.5">{moment().format("dddd Do MMMM YYYY")}</p>
-                </div>
-                </div>
-                <div className='flex gap-10 mt-4'>
-                <button 
-                    className={`btn w-[117.3px] transition-all duration-150 active:scale-99 active:opacity-80 ${isStarted ? 'bg-green-600' : 'bg-blue-500 hover:bg-blue-600'}`} 
-                    onClick={handleStart}
-                    >
-                    {isStarted ? "Punch Out" : "Punch In"}
-                </button>
-
+                        <h2 className="text-xl md:text-2xl text-white font-medium">
+                            Welcome {user?.name || "Guest"}
+                        </h2>
+                        <p className="text-xs text-gray-300 mt-1.5">{moment().format("dddd Do MMMM YYYY")}</p>
+                    </div>
                 </div>
             </div>
             <div className='grid grid-cols-1 md:grid-cols-1 gap-6 my-4 md:my-6'>
@@ -150,13 +140,13 @@ const fetchMyTasks = async () => {
                         </div>
                         {activeGraph === "time" ? (
                             <CustomBarChart data={barChartData} />
-                            ) : (
+                        ) : (
                             <TaskChart data={taskStats} />
-                            )}
+                        )}
                     </div>
                 </div>
             </div>
-            <ViewTaskDetails/>
+            <ViewTaskDetails />
 
         </DashboardLayout>
     );

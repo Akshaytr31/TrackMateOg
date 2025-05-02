@@ -2,38 +2,64 @@ const TimeLog = require("../models/TimeLog");
 const User = require("../models/User");
 const { DateTime } = require('luxon');
 
+// summary
+
 const getSummary = async (userId) => {
-  const punches = await Punch.find({ userId: userId }).sort({ inTime: 1 });
-  const lastPunch = punches[punches.length - 1];
-  const isPunchedOut = lastPunch?.outTime !== null;
-  const grouped = {};
-
-  punches.forEach((punch) => {
-    const date = new Date(parseInt(punch.inTime)).toISOString().split("T")[0];
-    if (!grouped[date]) grouped[date] = [];
-
-    grouped[date].push(punch);
+  const timeLogs = await TimeLog.find({
+    userId: userId
   });
 
+  const lastPunches = {};
   const workedHoursPerDay = [];
+  
+  timeLogs.forEach((log) => {
+    const date = new Date(log.date).toISOString().split("T")[0];
+    let hours = 0;
+    log.taskSessions.forEach((task) => {
+      lastPunches[task.taskId] = task.sessions[task.sessions.length - 1];
+      task.sessions.forEach((session) => {
+        const inTime = new Date(parseInt(session.in));
+        const outTime = session.out ? new Date(parseInt(session.out)) : new Date(); // safer fallback
+        hours += (outTime - inTime) / (1000 * 60 * 60); // ms to hours
+      });      
+    })
+    workedHoursPerDay.push({date, hours});
+  });
+  return { lastPunches, workedHoursPerDay };
 
-  for (const [date, punchList] of Object.entries(grouped)) {
-    let totalMs = 0;
 
-    punchList.forEach((punch) => {
-      if (punch.outTime) {
-        const inTime = new Date(parseInt(punch.inTime));
-        const outTime = new Date(
-          parseInt(punch.outTime ? punch.outTime : Date.now())
-        );
-        totalMs += outTime - inTime;
-      }
-    });
 
-    const hours = totalMs / 1000 / 60 / 60;
-    workedHoursPerDay.push({ date, hours });
-  }
-  return { workedHoursPerDay, isPunchedOut };
+  // const punches = await Punch.find({ userId: userId }).sort({ inTime: 1 });
+  // const lastPunch = punches[punches.length - 1];
+  // const isPunchedOut = lastPunch?.outTime !== null;
+  // const grouped = {};
+
+  // punches.forEach((punch) => {
+  //   const date = new Date(parseInt(punch.inTime)).toISOString().split("T")[0];
+  //   if (!grouped[date]) grouped[date] = [];
+
+  //   grouped[date].push(punch);
+  // });
+
+  // const workedHoursPerDay = [];
+
+  // for (const [date, punchList] of Object.entries(grouped)) {
+  //   let totalMs = 0;
+
+  //   punchList.forEach((punch) => {
+  //     if (punch.outTime) {
+  //       const inTime = new Date(parseInt(punch.inTime));
+  //       const outTime = new Date(
+  //         parseInt(punch.outTime ? punch.outTime : Date.now())
+  //       );
+  //       totalMs += outTime - inTime;
+  //     }
+  //   });
+
+  //   const hours = totalMs / 1000 / 60 / 60;
+  //   workedHoursPerDay.push({ date, hours });
+  // }
+  // return { workedHoursPerDay, isPunchedOut };
 };
 
 const getAdminSummary = async (req) => {
@@ -113,6 +139,8 @@ const getPunchSummary = async (req, res) => {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
+
+// register timelog
 
 const checkTimeLog = async (req, istTime) => {
   const date = istTime.toFormat('yyyy-MM-dd');
@@ -228,7 +256,6 @@ const checkAndUpdateSession = async (req, istTime) => {
       }
     );
   };
-  console.log(result);
   return result;
 };
 
@@ -236,18 +263,14 @@ const getTimeLog = async (req, istTime) => {
   const timeLogcheck = await checkTimeLog(req, istTime);
   let result = null;
   if (timeLogcheck){
-    console.log('TimeLog Already exist.')
     const taskCheck = await checkTaskSession(req, istTime);
     if (taskCheck){
-      console.log('Task already exist')
       result = await checkAndUpdateSession(req, istTime);
     } else {
       result = await createNewTaskSession(req, istTime);
-      console.log('Task session', result);
     }
   } else {
     result = await createNewTimeLog(req, istTime);
-    console.log('Time log session', result);
   }
   return result;
 };
@@ -260,7 +283,4 @@ const registerTime = async (req, res) => {
 
 module.exports = { getPunchSummary, registerTime };
 
-
-
-
-///////
+//]

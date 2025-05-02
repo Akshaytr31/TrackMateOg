@@ -36,6 +36,10 @@
   @apply bg-white p-6 rounded-2xl shadow-md shadow-blue-100 border border-blue-200/50
 }
 
+.task-start-btn{
+  @apply flex items-center justify-center gap-3 text-[14px] font-medium  text-gray-700 hover:text-gray-50 bg-gray-300 hover:bg-gray-600 hover:border-blue-100 px-4 py-1.5 rounded-lg border-gray-700 cursor-pointer transition-all duration-350 active:scale-95 ease-in-out
+}
+
 .card-btn{
   @apply flex items-center gap-3 text-[12px] font-medium text-blue-700 hover:text-blue-500 bg-gray-50 hover:bg-blue-100 hover:border-blue-100 px-4 py-1.5 rounded-lg border-blue-700 border-[1px] cursor-pointer transition-all duration-350 active:scale-95 ease-in-out ;
 }

@@ -1,4 +1,5 @@
 const Task = require("../models/Task");
+const TimeLog = require('../models/TimeLog');
 
 // Create Task
 const createTask = async (req, res) => {
@@ -32,8 +33,6 @@ const getTasks = async (req, res) => {
   }
 };
 
-
-
 // PUT /api/tasks/:taskId/assign
 const assignUsersToTask = async (req, res) => {
   const { taskId } = req.params;
@@ -48,37 +47,15 @@ const assignUsersToTask = async (req, res) => {
 };
 
 
-
-// Dummy routes (placeholders)
-const getDashboardData = (req, res) => {
-  res.json({ message: "Dashboard data placeholder" });
-};
-
 const getUserDashboardData = (req, res) => {
   res.json({ message: "User dashboard data placeholder" });
-};
-
-const getTaskById = (req, res) => {
-  res.json({ message: `Fetching task with ID ${req.params.id}` });
 };
 
 const updateTask = (req, res) => {
   res.json({ message: `Updating task with ID ${req.params.id}` });
 };
 
-
-
-const deleteTask = async (req, res) => {
-  try {
-    await Task.findByIdAndDelete(req.params.id);
-    res.status(200).json({ message: "Task deleted" });
-  } catch (error) {
-    res.status(500).json({ message: "Failed to delete task" });
-  }
-};
-
-
-const updateTaskStatus=async (req,res)=>{
+const updateTaskStatus=async (req,res) => {
   const {id}=req.params
   const {status}=req.body
 
@@ -96,22 +73,82 @@ const updateTaskStatus=async (req,res)=>{
     console.error("Error updating task status:",error)
     res.status(500).json({message:"Failed to update task status"})
   }
-}
+};
 
 const updateTaskCheckList = (req, res) => {
   res.json({ message: `Updating checklist for task with ID ${req.params.id}` });
 };
 
+const deleteTask =  async (req, res) => {
+  const {taskId}=req.params
+  try{
+    await Task.findByIdAndDelete(taskId)
+    res.status(200).json({message:"Task deleted"})
+  }catch(error){
+    console.error("Error dleting task:",error)
+    res.status(500).json({message:"Failed to delete task"})
+  }
+};
+
+const getAssignedTasks = async (req, res) => {
+  try {
+    const tasks = await Task.find({ assignedTo: req.user.id }).populate("assignedTo");
+    
+    const timeLogs = await TimeLog.find({ userId: req.user.id });
+
+    let taskTimeMap = {};
+
+    timeLogs.forEach((log) => {
+      log.taskSessions.forEach((taskSession) => {
+        const taskId = taskSession.taskId.toString();
+  
+        taskSession.sessions.forEach((session) => {
+          const time = 0;
+          const isRunning = false;
+          const start = new Date(parseInt(session.in));
+          const end = session.out ? new Date(parseInt(session.out)) : Date.now();
+          const durationMs = end - start;
+
+          if (!taskTimeMap[taskId]) {
+            taskTimeMap[taskId] = { time, isRunning };
+          }
+
+          taskTimeMap[taskId].time += durationMs;
+        });
+
+        const lastSession = taskSession.sessions[taskSession.sessions.length-1]
+        taskTimeMap[taskId].isRunning = lastSession.out ? false : true
+
+      });
+    });
+
+    console.log(taskTimeMap)
+
+    const tasksWithTime = tasks.map((task) => {
+      const time = taskTimeMap[task.id]?.time || 0;
+      const isRunning = taskTimeMap[task.id]?.isRunning || false;
+      return {
+        ...task.toObject(),
+        time,
+        isRunning
+      };
+    });
+
+    res.json(tasksWithTime);
+  } catch (error) {
+    res.status(500).json({ error: "Error fetching tasks"+error });
+  }
+}
+
 module.exports = {
   createTask,
   getTasks,
-  getDashboardData,
   getUserDashboardData,
-  getTaskById,
   updateTask,
   deleteTask,
   updateTaskStatus,
   updateTaskCheckList,
-  assignUsersToTask
+  assignUsersToTask, 
+  getAssignedTasks
 };
 
