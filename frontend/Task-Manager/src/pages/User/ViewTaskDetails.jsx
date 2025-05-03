@@ -13,7 +13,6 @@ function ViewTaskDetails() {
   const registerTime = async (taskId) => {
     try {
       const res = await axiosInstance.get(`/api/timeLog/register/time/${taskId}`);
-      console.log(res.data);
     } catch (err) {
       console.error("Couldn't register time.", err);
     }
@@ -22,7 +21,6 @@ function ViewTaskDetails() {
   const handleTimerToggle = (taskId) => {
     const isRunning = timers[taskId]?.isRunning;
     if (isRunning) {
-      // Stop the timer
       registerTime(taskId);
       clearInterval(timers[taskId].intervalId);
       setTimers((prev) => ({
@@ -57,14 +55,12 @@ function ViewTaskDetails() {
     }
   };
   
-
   const formatTime = (seconds) => {
     const h = String(Math.floor(seconds / 3600)).padStart(2, '0');
     const m = String(Math.floor((seconds % 3600) / 60)).padStart(2, '0');
     const s = String(seconds % 60).padStart(2, '0');
     return `${h}:${m}:${s}`;
   };
-
 
   useEffect(() => {
     const fetchMyTasks = async () => {
@@ -100,17 +96,14 @@ function ViewTaskDetails() {
     
         setTimers(initialTimers);
   
-        // ✅ Filter completed tasks
         const completedTasks = res.data.filter(task => task.status.toLowerCase() === 'completed');
   
-        // ✅ Group by date
         const grouped = completedTasks.reduce((acc, task) => {
           const date = new Date(task.updatedAt).toISOString().split('T')[0]; // Get date in YYYY-MM-DD format
           acc[date] = (acc[date] || 0) + 1;
           return acc;
         }, {});
   
-        // ✅ Convert to array for chart
         const chartData = Object.entries(grouped).map(([date, count]) => ({
           date,
           count,
@@ -195,3 +188,5 @@ function ViewTaskDetails() {
 
 export default ViewTaskDetails;
 
+
+//]]]]]

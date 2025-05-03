@@ -62,9 +62,10 @@ function SignUp() {
         adminInviteToken
       })
 
-      const {token,role}=response.data
+      const {token, role}=response.data
+      
       if(token){
-        localStorage.setItem("token",token)
+        localStorage.setItem('user', JSON.stringify({token, email, role}));
         updateUser(response.data)
 
         if(role==="admin"){

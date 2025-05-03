@@ -36,12 +36,12 @@ function Login() {
       const response = await axiosInstance.post(API_PATHS.AUTH.LOGIN+`?email=${email}&password=${password}`);
       const { token, role } = response.data;
       if (token) {
-        const userData={token,email,role}
+        const userData={token, email, role}
 
-        localStorage.setItem('user',JSON.stringify(userData))
-        updateUser(userData)
+        localStorage.setItem('user', JSON.stringify(userData))
+        // updateUser(userData)
         // localStorage.setItem("token", token);
-        // updateUser(response.data);
+        updateUser(response.data);
         if (role === "admin") {
           navigate("/admin/dashboard");
         } else {

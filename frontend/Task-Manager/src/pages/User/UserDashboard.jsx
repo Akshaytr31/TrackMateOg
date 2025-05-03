@@ -51,29 +51,7 @@ function UserDashboard() {
 
     useEffect(() => {
         getDashboardData();
-    }, [user]);
-
-    const handleStart = async () => {
-        if (!user) {
-            window.location.href = "/login";
-            return;
-        }
-
-        try {
-            const response = await axiosInstance.get("/api/timelog/punch");
-
-            if (response.data?.punch.outTime === null) {
-                setIsStarted(true);
-            } else {
-                setIsStarted(false);
-            }
-        } catch (err) {
-            console.error("Check-in failed", err);
-        }
-    };
-
-
-
+    }, [user?._id]);
 
     const fetchMyTasks = async () => {
         try {
@@ -102,8 +80,8 @@ function UserDashboard() {
 
     useEffect(() => {
         if (user?._id) fetchMyTasks();
-    }, [user]);
-
+    }, [user?._id]);
+    
     return (
         <DashboardLayout activeMenu="Dashboard">
             <div className="card my-5">

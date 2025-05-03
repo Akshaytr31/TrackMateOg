@@ -10,12 +10,12 @@
 
 
 import React from 'react'
-import {Navigate,Outlet} from 'react-router-dom'
+import {Navigate, Outlet} from 'react-router-dom'
 
 
 function PrivateRoute({allowedRoles}) {
 
-  const user =JSON.parse(localStorage.getItem('user'))
+  const user = JSON.parse(localStorage.getItem('user'));
 
   if (!user){
     return <Navigate to="/login" replace/>

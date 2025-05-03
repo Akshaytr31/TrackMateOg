@@ -1,10 +1,10 @@
 const Task = require("../models/Task");
 const TimeLog = require('../models/TimeLog');
+const { DateTime } = require('luxon');
 
 // Create Task
 const createTask = async (req, res) => {
   try {
-    console.log("Incoming task data:", req.body);
 
     if (!req.body.title) {
       return res.status(400).json({ message: "Title is required" });
@@ -105,8 +105,8 @@ const getAssignedTasks = async (req, res) => {
         taskSession.sessions.forEach((session) => {
           const time = 0;
           const isRunning = false;
-          const start = new Date(parseInt(session.in));
-          const end = session.out ? new Date(parseInt(session.out)) : Date.now();
+          const start = DateTime.fromMillis(parseInt(session.in));
+          const end = session.out ? DateTime.fromMillis(parseInt(session.out)) : DateTime.fromISO(log.date).endOf('day');
           const durationMs = end - start;
 
           if (!taskTimeMap[taskId]) {
@@ -121,8 +121,6 @@ const getAssignedTasks = async (req, res) => {
 
       });
     });
-
-    console.log(taskTimeMap)
 
     const tasksWithTime = tasks.map((task) => {
       const time = taskTimeMap[task.id]?.time || 0;
@@ -151,4 +149,3 @@ module.exports = {
   assignUsersToTask, 
   getAssignedTasks
 };
-

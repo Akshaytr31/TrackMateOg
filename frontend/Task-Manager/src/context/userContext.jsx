@@ -10,12 +10,12 @@ const UserProvider = ({ children }) => {
 
     const clearUser = () => {
         setUser(null);
-        localStorage.removeItem("token");
+        localStorage.removeItem("user");
     };
 
     useEffect(() => {
         const fetchUser = async () => {
-            const accessToken = localStorage.getItem("token");
+            const accessToken = JSON.parse(localStorage.getItem('user'))?.token;
             if (!accessToken) {
                 setLoading(false);
                 return;
@@ -38,7 +38,6 @@ const UserProvider = ({ children }) => {
 
     const updateUser = (userData) => {
         setUser(userData);
-        localStorage.setItem("token",userData.token);
         setLoading(false);
     };
 
@@ -51,4 +50,5 @@ const UserProvider = ({ children }) => {
 
 export default UserProvider;
 
-///]
+
+///

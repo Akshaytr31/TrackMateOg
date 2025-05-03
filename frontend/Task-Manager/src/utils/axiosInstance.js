@@ -13,7 +13,7 @@ const axiosInstance = axios.create({
 // Request Interceptor (Fixed: Removed Duplicate)
 axiosInstance.interceptors.request.use(
     (config) => {
-        const accessToken = localStorage.getItem("token");
+        const accessToken = JSON.parse(localStorage.getItem('user'))?.token;
         if (accessToken) {
             config.headers.Authorization = `Bearer ${accessToken}`;
         }
@@ -45,4 +45,4 @@ export default axiosInstance;
 
 
 
-/////]
+//

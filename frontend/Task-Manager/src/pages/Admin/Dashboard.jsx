@@ -57,7 +57,8 @@ function Dashboard() {
     
     const getDashboardData = async (selectedUserIds) => {
         try {
-            const response = await axiosInstance.post(API_PATHS.TIMELOG.GET_SUMMARY, selectedUserIds);
+            // const response = await axiosInstance.post(API_PATHS.TIMELOG.GET_SUMMARY, selectedUserIds);
+            const response=await axiosInstance.post(API_PATHS.TIMELOG.GET_SUMMARY,{userIds:selectedUserIds})
             if (response?.data) {
                 setBarChartData(response?.data);
             }
@@ -241,5 +242,8 @@ function Dashboard() {
 }
 
 export default Dashboard;
+
+
+//
 
 

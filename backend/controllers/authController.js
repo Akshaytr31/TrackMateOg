@@ -82,7 +82,7 @@ const loginUser=async (req,res)=>{
 
 
         //Return user data with JWT
-        res.json({
+        res.status(200).json({
             _id:user.id,
             name:user.name,
             email:user.email,

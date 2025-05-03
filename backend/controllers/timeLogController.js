@@ -13,16 +13,18 @@ const getSummary = async (userId) => {
   const workedHoursPerDay = [];
   
   timeLogs.forEach((log) => {
-    const date = new Date(log.date).toISOString().split("T")[0];
+    // const istTime = DateTime.now().setZone('Asia/Kolkata');
+    let date = DateTime.fromISO(log.date);
     let hours = 0;
     log.taskSessions.forEach((task) => {
       lastPunches[task.taskId] = task.sessions[task.sessions.length - 1];
       task.sessions.forEach((session) => {
-        const inTime = new Date(parseInt(session.in));
-        const outTime = session.out ? new Date(parseInt(session.out)) : new Date(); // safer fallback
+        const inTime = DateTime.fromMillis(parseInt(session.in));
+        const outTime = session.out ? DateTime.fromMillis(parseInt(session.out)) : date.endOf('day'); 
         hours += (outTime - inTime) / (1000 * 60 * 60); // ms to hours
       });      
     })
+    date = log.date;
     workedHoursPerDay.push({date, hours});
   });
   return { lastPunches, workedHoursPerDay };
@@ -63,60 +65,47 @@ const getSummary = async (userId) => {
 };
 
 const getAdminSummary = async (req) => {
-  const userIds = req?.body;
-  const punches = await Punch.find({ userId: { $in: userIds } }).sort({
-    inTime: 1,
-  });
-  const groupedByUser = {};
-  const userMap = {};
-
-  punches.forEach((punch) => {
-    const date = new Date(parseInt(punch.inTime)).toISOString().split("T")[0];
-    const userId = punch.userId.toString();
-
-    if (!groupedByUser[userId]) groupedByUser[userId] = {};
-    if (!groupedByUser[userId][date]) groupedByUser[userId][date] = [];
-
-    groupedByUser[userId][date].push(punch);
-  });
-
-  const allDatesSet = new Set();
+  
+  const userIds = req?.body.userIds;
+  const timeLogs = await TimeLog.find({ userId: { $in: userIds } });
 
   const workedHoursMap = {};
+  const userMap = {};
+  const allDatesSet = new Set();
 
-  for (const [userId, datePunches] of Object.entries(groupedByUser)) {
-    workedHoursMap[userId] = {};
-    for (const [date, punchList] of Object.entries(datePunches)) {
-      allDatesSet.add(date);
+  timeLogs.forEach((log) => {
+    const userId = log.userId.toString();
+    const date = log.date; 
+    allDatesSet.add(date);
 
-      let totalMs = 0;
-      punchList.forEach((punch) => {
-        if (punch.outTime) {
-          const inTime = new Date(parseInt(punch.inTime));
-          const outTime = new Date(parseInt(punch.outTime));
-          totalMs += outTime - inTime;
-        }
+    let hours = 0;
+
+    log.taskSessions.forEach((task) => {
+      task.sessions.forEach((session) => {
+        const inTime = DateTime.fromMillis(parseInt(session.in));
+        const outTime = session.out ? DateTime.fromMillis(parseInt(session.out)) : DateTime.now().setZone('Asia/Kolkata');
+        hours += (outTime - inTime) / (1000 * 60 * 60);
       });
+    });
 
-      const hours = totalMs / 1000 / 60 / 60;
-      workedHoursMap[userId][date] = hours;
-    }
-  }
+    if (!workedHoursMap[userId]) workedHoursMap[userId] = {};
+    workedHoursMap[userId][date] = (workedHoursMap[userId][date] || 0) + hours;
+  });
 
-  // Get user details
+
   const users = await User.find({ _id: { $in: userIds } });
   users.forEach((user) => {
-    userMap[user._id] = user.name;
+    userMap[user._id.toString()] = user.name;
   });
 
   const allDates = Array.from(allDatesSet).sort();
 
   const workedHoursPerDay = allDates.map((date) => {
     const row = { date };
-    for (const userId of userIds) {
+    userIds.forEach((userId) => {
       const name = userMap[userId];
       row[name] = workedHoursMap[userId]?.[date] || 0;
-    }
+    });
     return row;
   });
 
@@ -282,5 +271,3 @@ const registerTime = async (req, res) => {
 };
 
 module.exports = { getPunchSummary, registerTime };
-
-//]
