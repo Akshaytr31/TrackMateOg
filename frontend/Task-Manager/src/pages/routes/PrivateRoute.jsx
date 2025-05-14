@@ -31,4 +31,3 @@ function PrivateRoute({allowedRoles}) {
 export default PrivateRoute
 
 
-///

@@ -117,6 +117,7 @@ function Dashboard() {
     useEffect(() => {
         const selectedUserIds = selectedUsers.map(user => user._id);
         getDashboardData(selectedUserIds);
+        console.log('useEff', selectedUserIds);
     }, [selectedUsers]);
 
     return (

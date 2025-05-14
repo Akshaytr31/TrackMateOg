@@ -10,7 +10,6 @@ import { UserContext } from '../../context/userContext';
 import React, { useContext, useEffect, useState } from 'react';
 import useUserAuth from '../../hooks/useUserAuth';
 import DashboardLayout from '../../components/layouts/DashboardLayout';
-import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../../utils/axiosInstance';
 import { API_PATHS } from '../../utils/apiPaths';
 import CustomBarChart from '../../components/Charts/CustomBarChart';
@@ -25,10 +24,7 @@ function UserDashboard() {
     useUserAuth();
 
     const { user } = useContext(UserContext);
-    const navigate = useNavigate();
     const [barChartData, setBarChartData] = useState([]);
-    const [isStarted, setIsStarted] = useState(false);
-    const [myTasks, setMyTasks] = useState([]);
 
     const [activeGraph, setActiveGraph] = useState("time");
     const [taskStats, setTaskStats] = useState([]);
@@ -38,9 +34,6 @@ function UserDashboard() {
         try {
             const response = await axiosInstance.post(API_PATHS.TIMELOG.GET_SUMMARY);
             if (response.data) {
-                if (response.data?.isPunchedOut === false) {
-                    setIsStarted(true);
-                }
                 setBarChartData(response.data.workedHoursPerDay);
             }
 
@@ -51,35 +44,6 @@ function UserDashboard() {
 
     useEffect(() => {
         getDashboardData();
-    }, [user?._id]);
-
-    const fetchMyTasks = async () => {
-        try {
-            const res = await axiosInstance.get(`/api/tasks/assigned/${user._id}`);
-
-            setMyTasks(res.data);
-
-            // Group completed tasks by date
-            const completedTasks = res.data.filter(task => task.status.toLowerCase() === 'completed');
-            const grouped = completedTasks.reduce((acc, task) => {
-                const date = new Date(task.updatedAt).toISOString().split('T')[0];
-                acc[date] = (acc[date] || 0) + 1;
-                return acc;
-            }, {});
-
-            const taskChartData = Object.entries(grouped).map(([date, count]) => ({
-                date,
-                count,
-            }));
-            setTaskStats(taskChartData);
-        } catch (err) {
-            console.error("Couldn't load tasks", err);
-        }
-    };
-
-
-    useEffect(() => {
-        if (user?._id) fetchMyTasks();
     }, [user?._id]);
     
     return (
@@ -132,3 +96,5 @@ function UserDashboard() {
 
 export default UserDashboard;
 
+
+/////

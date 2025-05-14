@@ -3,20 +3,9 @@ import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend
 } from 'recharts';
 
-// function getRandomDarkColor() {
-//   let color = '#';
-//   for (let i = 0; i < 3; i++) {
-  
-//     const value = Math.floor(Math.random() * 200); 
-//     color += value.toString(16).padStart(2, '0');
-//   }
-//   return color;
-// }
-
-
 const darkColors = [
-  '#1B1F3B', // dark navy (1)
-  '#3B1F2B', // dark maroon (2)
+  '#1B1F3B', // dark navy
+  '#3B1F2B', // dark maroon
   '#F94144', // red
   '#F3722C', // orange
   '#F9C74F', // yellow
@@ -31,20 +20,12 @@ const darkColors = [
 ];
 
 
-function getRandomDarkColor() {
-  const randomIndex = Math.floor(Math.random() * darkColors.length);
-  return darkColors[randomIndex];
-}
-
-
-
-function generateUserColors(userCount) {
-  return Array.from({ length: userCount }, getRandomDarkColor);
+function getColorForUser(userId) {
+  const hash = [...userId].reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  return darkColors[hash % darkColors.length];
 }
 
 function TimeSummaryChart({ data, users }) {
-  const COLORS = generateUserColors(users);
-
   return (
     <div className='bg-white mt-6 rounded-lg p-4 shadow-sm'>
       <h4 className='text-lg font-semibold mb-3 text-gray-700'>Time Spent in Office</h4>
@@ -58,12 +39,12 @@ function TimeSummaryChart({ data, users }) {
           />
           <Tooltip />
           <Legend />
-          {users.map((user, index) => (
+          {users.map((user) => (
             <Line
               key={user._id}
               type="monotone"
               dataKey={user.name}
-              stroke={COLORS[index]}
+              stroke={getColorForUser(user._id)}
               strokeWidth={2}
               dot={{ r: 4 }}
               activeDot={{ r: 6 }}
@@ -80,66 +61,4 @@ export default TimeSummaryChart;
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+//////]

@@ -2,66 +2,28 @@ const TimeLog = require("../models/TimeLog");
 const User = require("../models/User");
 const { DateTime } = require('luxon');
 
-// summary
-
+// summary//
 const getSummary = async (userId) => {
-  const timeLogs = await TimeLog.find({
-    userId: userId
-  });
+  const timeLogs = await TimeLog.find({userId: userId});
 
   const lastPunches = {};
   const workedHoursPerDay = [];
   
   timeLogs.forEach((log) => {
-    // const istTime = DateTime.now().setZone('Asia/Kolkata');
-    let date = DateTime.fromISO(log.date);
+    let date = DateTime.fromISO(log.date).endOf('day');
+    const endTime = date < DateTime.now() ? date : DateTime.now();
     let hours = 0;
     log.taskSessions.forEach((task) => {
-      lastPunches[task.taskId] = task.sessions[task.sessions.length - 1];
       task.sessions.forEach((session) => {
         const inTime = DateTime.fromMillis(parseInt(session.in));
-        const outTime = session.out ? DateTime.fromMillis(parseInt(session.out)) : date.endOf('day'); 
-        hours += (outTime - inTime) / (1000 * 60 * 60); // ms to hours
+        const outTime = session.out ? DateTime.fromMillis(parseInt(session.out)) : endTime; // first we are getting sessions.out, then if not available get endtime.
+        hours += (outTime - inTime) / (1000 * 60 * 60); //
       });      
     })
     date = log.date;
     workedHoursPerDay.push({date, hours});
   });
-  return { lastPunches, workedHoursPerDay };
-
-
-
-  // const punches = await Punch.find({ userId: userId }).sort({ inTime: 1 });
-  // const lastPunch = punches[punches.length - 1];
-  // const isPunchedOut = lastPunch?.outTime !== null;
-  // const grouped = {};
-
-  // punches.forEach((punch) => {
-  //   const date = new Date(parseInt(punch.inTime)).toISOString().split("T")[0];
-  //   if (!grouped[date]) grouped[date] = [];
-
-  //   grouped[date].push(punch);
-  // });
-
-  // const workedHoursPerDay = [];
-
-  // for (const [date, punchList] of Object.entries(grouped)) {
-  //   let totalMs = 0;
-
-  //   punchList.forEach((punch) => {
-  //     if (punch.outTime) {
-  //       const inTime = new Date(parseInt(punch.inTime));
-  //       const outTime = new Date(
-  //         parseInt(punch.outTime ? punch.outTime : Date.now())
-  //       );
-  //       totalMs += outTime - inTime;
-  //     }
-  //   });
-
-  //   const hours = totalMs / 1000 / 60 / 60;
-  //   workedHoursPerDay.push({ date, hours });
-  // }
-  // return { workedHoursPerDay, isPunchedOut };
+  return { workedHoursPerDay };
 };
 
 const getAdminSummary = async (req) => {
@@ -76,6 +38,9 @@ const getAdminSummary = async (req) => {
   timeLogs.forEach((log) => {
     const userId = log.userId.toString();
     const date = log.date; 
+    const logDate = DateTime.fromISO(log.date).endOf('day');
+    const endTime = logDate < DateTime.now() ? logDate : DateTime.now();
+
     allDatesSet.add(date);
 
     let hours = 0;
@@ -83,7 +48,7 @@ const getAdminSummary = async (req) => {
     log.taskSessions.forEach((task) => {
       task.sessions.forEach((session) => {
         const inTime = DateTime.fromMillis(parseInt(session.in));
-        const outTime = session.out ? DateTime.fromMillis(parseInt(session.out)) : DateTime.now().setZone('Asia/Kolkata');
+        const outTime = session.out ? DateTime.fromMillis(parseInt(session.out)) : endTime;
         hours += (outTime - inTime) / (1000 * 60 * 60);
       });
     });
@@ -129,7 +94,7 @@ const getPunchSummary = async (req, res) => {
   }
 };
 
-// register timelog
+//register timelog//
 
 const checkTimeLog = async (req, istTime) => {
   const date = istTime.toFormat('yyyy-MM-dd');
@@ -204,13 +169,9 @@ const checkAndUpdateSession = async (req, istTime) => {
     'taskSessions.taskId': req.params.taskId,
   })
   
-  if (!timeLog) return null;
-  
   const taskSession = timeLog.taskSessions.find(
     ts => ts.taskId.toString() === req.params.taskId
   );
-  
-  if (!taskSession) return null;
   
   // Find the active session (where out is null)
   const sessionIndex = taskSession.sessions.findIndex(session => session.out === null);
@@ -271,3 +232,5 @@ const registerTime = async (req, res) => {
 };
 
 module.exports = { getPunchSummary, registerTime };
+
+///

@@ -1,8 +1,9 @@
 const express = require("express");
-const router = express.Router();
 const TimeLog = require("../models/TimeLog");
 const { protect } = require("../middlewares/authMiddleware");
 const { getPunchSummary, registerTime } = require("../controllers/timeLogController");
+
+const router = express.Router();
 
 router.post("/summary", protect, getPunchSummary);
 

@@ -18,8 +18,7 @@ const createTask = async (req, res) => {
   }
 };
 
-// Get All Tasks
-// GET /api/tasks?userId=abc123
+// Get All Tasks//]
 const getTasks = async (req, res) => {
   const { userId } = req.query;
 
@@ -33,7 +32,7 @@ const getTasks = async (req, res) => {
   }
 };
 
-// PUT /api/tasks/:taskId/assign
+// PUT /api/tasks/:taskId/assign//
 const assignUsersToTask = async (req, res) => {
   const { taskId } = req.params;
   const { assignedTo } = req.body;
@@ -80,7 +79,7 @@ const updateTaskCheckList = (req, res) => {
 };
 
 const deleteTask =  async (req, res) => {
-  const {taskId}=req.params
+  const {taskId}=req.params//extract taskId
   try{
     await Task.findByIdAndDelete(taskId)
     res.status(200).json({message:"Task deleted"})
@@ -92,9 +91,10 @@ const deleteTask =  async (req, res) => {
 
 const getAssignedTasks = async (req, res) => {
   try {
-    const tasks = await Task.find({ assignedTo: req.user.id }).populate("assignedTo");
+    const tasks = await Task.find({ assignedTo: req.user.id }).populate("assignedTo");//populate is used for replace the 'assingnedto'
+    // ID with full user details
     
-    const timeLogs = await TimeLog.find({ userId: req.user.id });
+    const timeLogs = await TimeLog.find({ userId: req.user.id });//fetch all the time log with current user////
 
     let taskTimeMap = {};
 
@@ -105,12 +105,14 @@ const getAssignedTasks = async (req, res) => {
         taskSession.sessions.forEach((session) => {
           const time = 0;
           const isRunning = false;
+          const logDate = DateTime.fromISO(log.date).endOf('day');
+          const endTime = logDate < DateTime.now() ? logDate : DateTime.now();
           const start = DateTime.fromMillis(parseInt(session.in));
-          const end = session.out ? DateTime.fromMillis(parseInt(session.out)) : DateTime.fromISO(log.date).endOf('day');
+          const end = session.out ? DateTime.fromMillis(parseInt(session.out)) : endTime;
           const durationMs = end - start;
 
           if (!taskTimeMap[taskId]) {
-            taskTimeMap[taskId] = { time, isRunning };
+            taskTimeMap[taskId] = { time, isRunning };//if there is no timestamp initialize it
           }
 
           taskTimeMap[taskId].time += durationMs;
@@ -149,3 +151,4 @@ module.exports = {
   assignUsersToTask, 
   getAssignedTasks
 };
+///

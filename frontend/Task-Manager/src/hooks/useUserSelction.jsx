@@ -6,10 +6,10 @@ const useUserSelection = (initialUsers = [], tasks = [], currentTaskId = null, r
 
   const assignUserToTask = async (user, taskId) => {
     try {
-      const task = tasks.find(t => t._id === taskId);
+      const task = tasks.find(t => t._id === taskId);//find matching task
       const alreadyAssigned = task?.assignedTo.map(u => u._id || u);
 
-      const updatedAssignedTo = alreadyAssigned.includes(user._id)
+      const updatedAssignedTo = alreadyAssigned.includes(user._id)//if the user is assingned remove and not assigned add
         ? alreadyAssigned.filter(id => id !== user._id)
         : [...alreadyAssigned, user._id];
 
@@ -27,9 +27,9 @@ const useUserSelection = (initialUsers = [], tasks = [], currentTaskId = null, r
     if (context === 'dashboard') {
       const exist = selectedUsers.find(u => u._id === user._id);
       if (exist) {
-        setSelectedUsers(prev => prev.filter(u => u._id !== user._id));
+        setSelectedUsers(prev => prev.filter(u => u._id !== user._id));//if user not select ,deselect the user
       } else {
-        setSelectedUsers(prev => [...prev, user]);
+        setSelectedUsers(prev => [...prev, user]);//if user not selected select the user
       }
     } else if (context === 'task' && currentTaskId) {
       assignUserToTask(user, currentTaskId);
@@ -43,8 +43,11 @@ const useUserSelection = (initialUsers = [], tasks = [], currentTaskId = null, r
     toggleUserSelection,
     clearSelectedUsers,
     setSelectedUsers,
-    assignUserToTask, // exported if needed separately
+    assignUserToTask, 
   };
 };
 
 export default useUserSelection;
+
+
+///

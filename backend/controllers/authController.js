@@ -63,7 +63,7 @@ const registerUser=async (req,res)=>{
 //@desc Login user
 //@route POST /api/auth/login
 //@access Public
-const loginUser=async (req,res)=>{
+const loginUser=async (req, res) => {
     try{
 
         const { email, password }=(req.query)
@@ -146,7 +146,7 @@ const updateUserProfile=async (req,res)=>{
     }
 }
 
-module.exports={registerUser,loginUser,getUserProfile,updateUserProfile}
+module.exports={registerUser, loginUser, getUserProfile, updateUserProfile}
 
 
 /////
